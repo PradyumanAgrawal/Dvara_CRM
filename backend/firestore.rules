@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function hasRole(role) {
+      return request.auth.token.role == role;
+    }
+    function sameBranch(resourceData) {
+      return request.auth.token.branch == resourceData.branch;
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && hasRole("Admin");
+      allow write: if isSignedIn() && hasRole("Admin");
+    }
+
+    match /{collection}/{docId} {
+      allow read: if isSignedIn() && sameBranch(resource.data);
+      allow create, update, delete: if isSignedIn() && sameBranch(request.resource.data);
+    }
+  }
+}
