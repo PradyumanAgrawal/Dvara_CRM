@@ -9,7 +9,8 @@
 - Cloud Functions use Python runtime (2nd gen) with Firebase Admin SDK.
 
 ## Firebase Services
-- Auth: email/password login (username/password) and role claims.
+- Auth: email/password login (username/password).
+- Roles/branch stored in Firestore `users` docs (custom claims optional).
 - Firestore: source of truth for CRM data.
 - Functions: minimal automation and server-side actions.
 - Storage: RFP and invoice attachments.
@@ -27,27 +28,31 @@
 Focus on quick, working flows with minimal Functions.
 
 ### P0: Foundation
-- Enable Email/Password Auth in Firebase console.
-- Apply Firestore rules and indexes for branch-scoped data access.
-- Finalize interlinked schema fields and naming (IDs only).
-- Define minimal seed data for one branch and one officer.
+- [x] Enable Email/Password Auth in Firebase console.
+- [x] Apply Firestore rules and indexes for branch-scoped data access.
+- [x] Finalize interlinked schema fields and naming (IDs only).
+- [x] Define minimal seed data for one branch and one officer.
+- [x] Store role/branch in `users/{uid}` profile docs.
 
 ### P1: Core CRM Data
-- CRUD for `primary_people` and `households`.
-- CRUD for `products`, `interactions`, `tasks`.
-- Client-side batch writes for:
+- [x] Create/list for `primary_people` and `households` (batch write on create).
+- [x] Edit flows for `primary_people` and `households`.
+- [ ] Delete flows for `primary_people` and `households`.
+- [x] Create/list for `products`, `interactions`, `tasks`.
+- [ ] Edit/delete flows for `products`, `interactions`, `tasks`.
+- [x] Client-side batch writes for:
   - Person + household create.
   - Interaction with follow-up task creation.
-- Queries for dashboards and "pending follow-ups".
+- [ ] Queries for dashboards and "pending follow-ups".
 
 ### P2: Standard CRM Features
-- CRUD for `opportunities`, `meetings`, `phone_calls`, `rfps`, `invoices`.
-- Storage paths for RFP and invoice attachments.
+- [ ] CRUD for `opportunities`, `meetings`, `phone_calls`, `rfps`, `invoices`.
+- [ ] Storage paths for RFP and invoice attachments.
 
 ### P3: Minimal Functions (Only if needed)
-- `sync_user_role_claims` for role + branch claims.
-- `generate_invoice_pdf` for server-side invoice PDF.
-- Optional guardrail triggers if client writes miss required tasks.
+- [ ] `sync_user_role_claims` for role + branch claims.
+- [ ] `generate_invoice_pdf` for server-side invoice PDF.
+- [ ] Optional guardrail triggers if client writes miss required tasks.
 
 ## Suggested Backend Layout
 - `backend/functions/main.py` - entry point for functions.
@@ -79,6 +84,7 @@ collections; resolve display values in the client.
 - `tasks`
   - `task_title`, `due_date`, `status`, `linked_interaction_id`
   - `task_type` (FollowUp / SuggestedInteraction / System)
+  - `primary_person_id` (for person-level task views)
   - `source_ref` (doc path that triggered the task)
 - `opportunities`
   - `stage`, `value`, `owner_user_id`, `primary_person_id` (optional)
@@ -127,10 +133,10 @@ only backfill when a required field or task is missing.
 
 ## Security Rules (Summary)
 - All reads/writes require authenticated users.
-- Branch-scoped access: `doc.branch == request.auth.token.branch`.
-- Only Admins can modify `users` and set roles.
+- Branch-scoped access: `doc.branch == users/{uid}.branch`.
+- Users can read/write their own profile; Admins can manage any profile.
 - Clients cannot write server-managed fields (`risk_status`, system tasks).
-- Auth uses email/password login for all roles.
+- Auth uses email/password login for all roles (no custom claims required).
 
 ## Security Rules (Concrete Outline)
 Rules should be explicit about auth, branch scoping, and server-managed fields.
@@ -142,16 +148,24 @@ service cloud.firestore {
     function isSignedIn() {
       return request.auth != null;
     }
-    function hasRole(role) {
-      return request.auth.token.role == role;
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function userRole() {
+      return userDoc().role;
+    }
+    function userBranch() {
+      return userDoc().branch;
     }
     function sameBranch(resourceData) {
-      return request.auth.token.branch == resourceData.branch;
+      return userBranch() == resourceData.branch;
     }
 
     match /users/{userId} {
-      allow read: if isSignedIn() && hasRole("Admin");
-      allow write: if isSignedIn() && hasRole("Admin");
+      allow read: if isSignedIn() && (userId == request.auth.uid || userRole() == "Admin");
+      allow create: if isSignedIn() && userId == request.auth.uid;
+      allow update: if isSignedIn() && (userId == request.auth.uid || userRole() == "Admin");
+      allow delete: if isSignedIn() && userRole() == "Admin";
     }
 
     match /{collection}/{docId} {
@@ -216,6 +230,38 @@ Add indexes in `backend/firestore.indexes.json` for the following queries:
       "fields": [
         { "fieldPath": "primary_person_id", "order": "ASCENDING" },
         { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "households",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "branch", "order": "ASCENDING" },
+        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "interactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "branch", "order": "ASCENDING" },
+        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "branch", "order": "ASCENDING" },
+        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "branch", "order": "ASCENDING" },
+        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
       ]
     }
   ],

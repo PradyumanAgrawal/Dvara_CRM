@@ -27,26 +27,28 @@ and `functions` for reuse.
 Focus on fast delivery with reusable components and minimal custom UI.
 
 ### P0: App Shell + Auth
-- Landing page with Dvara branding and login CTA.
-- Email/password login form with validation.
-- App shell layout (sidebar + top bar + breadcrumb).
-- Route guards and redirect flow (`/` -> `/login` -> `/app`).
+- [x] Landing page with Dvara branding and login CTA.
+- [x] Email/password login form with validation.
+- [x] First-login profile setup (role + branch).
+- [x] App shell layout (sidebar + top bar + breadcrumb).
+- [x] Route guards and redirect flow (`/` -> `/login` -> `/app`).
 
 ### P1: Core CRUD Templates
-- Reusable `ListPage`, `DetailPage`, `FormPage` scaffolds.
-- Shared form fields via `FieldRegistry`.
-- DataTable wrapper with search + filters.
+- [x] Reusable `ListPage`, `DetailPage`, `FormPage` scaffolds.
+- [x] Shared form fields via `FieldRegistry`.
+- [x] DataTable wrapper with search + filters.
 
 ### P2: Core CRM Screens
-- Primary people list + create + detail tabs.
-- Products list and creation flow.
-- Interactions list and creation flow.
-- Tasks list + status updates + follow-up visibility.
+- [x] Primary people list + create + detail scaffolds.
+- [x] Primary people edit flow (profile + household).
+- [x] Products list and creation flow.
+- [x] Interactions list and creation flow.
+- [x] Tasks list + status updates + follow-up visibility.
 
 ### P3: Standard CRM Screens
-- Opportunities, meetings, phone calls, RFPs, invoices.
-- File upload UI for RFPs/invoices.
-- Reports page with basic counts.
+- [x] Opportunities, meetings, phone calls, RFPs, invoices (list + create).
+- [ ] File upload UI for RFPs/invoices.
+- [x] Reports page with basic counts (static placeholders).
 
 ## App Structure
 - Landing page for unauthenticated users with a login CTA.
@@ -63,8 +65,10 @@ Focus on fast delivery with reusable components and minimal custom UI.
 
 ### App Shell (auth required)
 - `/app` - Dashboard.
+- `/app/setup` - Profile setup (role + branch).
 - `/app/people` - Primary people list.
 - `/app/people/new` - Create primary person.
+- `/app/people/:id/edit` - Edit primary person.
 - `/app/people/:id` - Primary person detail with tabs:
   - Overview
   - Household
@@ -86,12 +90,13 @@ Focus on fast delivery with reusable components and minimal custom UI.
 
 ## User Flow
 - Landing page -> Login (if not authenticated).
-- Login -> App shell with sidebar sections.
+- Login -> Profile setup (first time) -> App shell with sidebar sections.
 - Breadcrumbs guide users through list -> detail -> edit flows.
 
 ## Auth Flow (Email/Password)
 - Login uses `signInWithEmailAndPassword`.
 - Route guard uses `onAuthStateChanged` and redirects to `/login`.
+- If `users/{uid}` is missing, redirect to `/app/setup`.
 - Fetch `users/{uid}` after login to load role and branch.
 - Logout uses `signOut`.
 
@@ -108,6 +113,7 @@ const routes = [
     element: <AppShell />,
     children: [
       { index: true, element: <Dashboard /> },
+      { path: "setup", element: <ProfileSetup /> },
       { path: "people", element: <PeopleList /> },
       { path: "people/new", element: <PeopleCreate /> },
       { path: "people/:id", element: <PeopleDetail /> },
@@ -170,7 +176,7 @@ Use default shadcn styling and tokens.
 - Avoid custom color palettes or theme overrides.
 
 ## Data Access Patterns
-- Use Firebase Auth (email/password) for session and role claims.
+- Use Firebase Auth (email/password) for sessions and `users/{uid}` profile lookup.
 - Interlinked Firestore schema: store IDs only, resolve display fields in the client.
 - Firestore queries scoped by `branch` and `assigned_officer_id`.
 - Real-time listeners for dashboards and task lists.
