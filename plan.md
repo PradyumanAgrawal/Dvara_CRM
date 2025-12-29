@@ -9,8 +9,8 @@
 - [x] Choose client stack (Web app + Firebase SDK).
 - [x] Define environment config for dev/prod (Firebase project IDs, API keys).
 - [x] Set up Hosting with SPA routing.
-- [ ] Set up Functions for workflow automation and triggers.
-- [ ] Configure Storage for document uploads (if needed for RFPs, invoices, attachments).
+- [x] Set up Functions for workflow automation and triggers (implemented client-side to minimize Functions).
+- [x] Configure Storage for document uploads (if needed for RFPs, invoices, attachments).
 
 ## Data Model (Firestore)
 - [x] `primary_people` collection with fields from the spec.
@@ -42,7 +42,7 @@
 
 ### Financial Relationships
 - [x] Create product records (loan/insurance/savings/pension).
-- [ ] Update product status (active/closed/renewal due).
+- [x] Update product status (active/closed/renewal due).
 - [x] View product history per person.
 
 ### Interactions (Most Important)
@@ -59,10 +59,10 @@
 ### Workflow Automation (Firebase Functions)
 - [x] On primary person create -> set PGPD stage to Plan.
 - [x] On primary person create -> create "Initial financial assessment visit" task.
-- [ ] On active loan product -> suggest "Business / income review" interaction.
-- [ ] On risk flag added -> create "Insurance discussion" interaction.
-- [ ] On risk flag added -> highlight "At Risk" in dashboard.
-- [ ] On stable interactions or loan completed -> suggest "Savings / pension conversation".
+- [x] On active loan product -> suggest "Business / income review" interaction.
+- [x] On risk flag added -> create "Insurance discussion" interaction (as suggested task).
+- [x] On risk flag added -> highlight "At Risk" in dashboard.
+- [x] On stable interactions or loan completed -> suggest "Savings / pension conversation".
 - [x] On interaction outcome "Follow-up Required" -> create task.
 
 ### Standard CRM Requirements
@@ -70,27 +70,28 @@
 - [x] Meetings management (schedule, notes, attendees).
 - [x] Phone call logs (date, duration, outcome).
 - [x] RFP tracking (status, due dates, attachments).
-- [ ] Invoice generation (status, amount, storage).
+- [x] Invoice generation (status, amount, storage).
 
 ## UI / Screens (Web App)
 - [x] Login and role-aware navigation.
 - [x] Dashboard (at-risk list, pending follow-ups, key stats).
 - [x] Primary person profile view (summary + related entities).
 - [x] Create screens for each entity.
-- [ ] Edit screens for each entity.
+- [x] Edit screens for each entity.
+- [x] Delete actions for each entity (row actions + confirm).
 - [x] Search and filters (by village, branch, officer, PGPD stage).
 
 ## Reporting (Lightweight)
-- [ ] Simple counts: active loans, at-risk customers, pending follow-ups.
-- [ ] Officer activity summary (interactions per week).
+- [x] Simple counts: active loans, at-risk customers, pending follow-ups.
+- [x] Officer activity summary (interactions per week).
 
 ## Quality, Security, and Operations
 - [x] Firestore indexes for common queries.
 - [x] Seed data for demo.
-- [ ] Logging for workflow triggers.
+- [x] Logging for workflow triggers.
 - [ ] Basic audit logs for critical updates (optional).
 
 ## Delivery Checklist
-- [ ] README with local setup steps.
-- [ ] Demo script (walkthrough of workflows).
+- [x] README with local setup steps.
+- [x] Demo script (walkthrough of workflows).
 - [ ] Screenshots or short recording (optional).

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
-import { listRecords } from "@/lib/firestore";
+import { RowActions } from "@/components/templates/row-actions";
+import { deleteRecord, listRecords } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type CallRow = {
@@ -13,25 +14,6 @@ type CallRow = {
   outcome: string;
   person: string;
 };
-
-const columns: ColumnDef<CallRow>[] = [
-  {
-    header: "Call time",
-    cell: (row) => row.time
-  },
-  {
-    header: "Duration",
-    cell: (row) => row.duration
-  },
-  {
-    header: "Outcome",
-    cell: (row) => <Badge variant="secondary">{row.outcome}</Badge>
-  },
-  {
-    header: "Primary person",
-    cell: (row) => row.person
-  }
-];
 
 export function PhoneCallsList() {
   const navigate = useNavigate();
@@ -85,6 +67,45 @@ export function PhoneCallsList() {
     const target = [row.outcome, row.person].join(" ").toLowerCase();
     return target.includes(search.toLowerCase());
   });
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteRecord("phone_calls", id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete phone call", err);
+      setError("Failed to delete phone call.");
+    }
+  };
+
+  const columns: ColumnDef<CallRow>[] = [
+    {
+      header: "Call time",
+      cell: (row) => row.time
+    },
+    {
+      header: "Duration",
+      cell: (row) => row.duration
+    },
+    {
+      header: "Outcome",
+      cell: (row) => <Badge variant="secondary">{row.outcome}</Badge>
+    },
+    {
+      header: "Primary person",
+      cell: (row) => row.person
+    },
+    {
+      header: "Action",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/phone-calls/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this phone call?"
+        />
+      )
+    }
+  ];
 
   return (
     <ListPage

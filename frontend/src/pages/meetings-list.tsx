@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
-import { listRecords } from "@/lib/firestore";
+import { RowActions } from "@/components/templates/row-actions";
+import { deleteRecord, listRecords } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type MeetingRow = {
@@ -13,25 +14,6 @@ type MeetingRow = {
   location: string;
   attendees: string;
 };
-
-const columns: ColumnDef<MeetingRow>[] = [
-  {
-    header: "Meeting",
-    cell: (row) => row.title
-  },
-  {
-    header: "Date",
-    cell: (row) => <Badge variant="secondary">{row.date}</Badge>
-  },
-  {
-    header: "Location",
-    cell: (row) => row.location
-  },
-  {
-    header: "Attendees",
-    cell: (row) => row.attendees
-  }
-];
 
 export function MeetingsList() {
   const navigate = useNavigate();
@@ -85,6 +67,45 @@ export function MeetingsList() {
     const target = [row.title, row.location].join(" ").toLowerCase();
     return target.includes(search.toLowerCase());
   });
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteRecord("meetings", id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete meeting", err);
+      setError("Failed to delete meeting.");
+    }
+  };
+
+  const columns: ColumnDef<MeetingRow>[] = [
+    {
+      header: "Meeting",
+      cell: (row) => row.title
+    },
+    {
+      header: "Date",
+      cell: (row) => <Badge variant="secondary">{row.date}</Badge>
+    },
+    {
+      header: "Location",
+      cell: (row) => row.location
+    },
+    {
+      header: "Attendees",
+      cell: (row) => row.attendees
+    },
+    {
+      header: "Action",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/meetings/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this meeting?"
+        />
+      )
+    }
+  ];
 
   return (
     <ListPage

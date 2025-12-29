@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
+import { RowActions } from "@/components/templates/row-actions";
 import { formatCurrency } from "@/lib/formatters";
-import { listProducts } from "@/lib/firestore";
+import { deleteRecord, listProducts } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type ProductRow = {
@@ -16,45 +17,6 @@ type ProductRow = {
   personId: string;
   personName: string;
 };
-
-const columns: ColumnDef<ProductRow>[] = [
-  {
-    header: "Product",
-    cell: (row) => (
-      <Link className="font-medium text-primary hover:underline" to={`/app/products/${row.id}`}>
-        {row.name}
-      </Link>
-    )
-  },
-  {
-    header: "Type",
-    cell: (row) => <Badge variant="secondary">{row.type}</Badge>
-  },
-  {
-    header: "Status",
-    cell: (row) => <Badge variant="secondary">{row.status}</Badge>
-  },
-  {
-    header: "Amount",
-    cell: (row) => row.amount
-  },
-  {
-    header: "Primary person",
-    cell: (row) => (
-      <Link className="text-primary hover:underline" to={`/app/people/${row.personId}`}>
-        {row.personName}
-      </Link>
-    )
-  },
-  {
-    header: "Action",
-    cell: (row) => (
-      <Link className="text-primary hover:underline" to={`/app/products/${row.id}/edit`}>
-        Edit
-      </Link>
-    )
-  }
-];
 
 export function ProductsList() {
   const navigate = useNavigate();
@@ -112,6 +74,57 @@ export function ProductsList() {
       .toLowerCase();
     return target.includes(search.toLowerCase());
   });
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteRecord("products", id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete product", err);
+      setError("Failed to delete product.");
+    }
+  };
+
+  const columns: ColumnDef<ProductRow>[] = [
+    {
+      header: "Product",
+      cell: (row) => (
+        <Link className="font-medium text-primary hover:underline" to={`/app/products/${row.id}`}>
+          {row.name}
+        </Link>
+      )
+    },
+    {
+      header: "Type",
+      cell: (row) => <Badge variant="secondary">{row.type}</Badge>
+    },
+    {
+      header: "Status",
+      cell: (row) => <Badge variant="secondary">{row.status}</Badge>
+    },
+    {
+      header: "Amount",
+      cell: (row) => row.amount
+    },
+    {
+      header: "Primary person",
+      cell: (row) => (
+        <Link className="text-primary hover:underline" to={`/app/people/${row.personId}`}>
+          {row.personName}
+        </Link>
+      )
+    },
+    {
+      header: "Action",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/products/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this product record?"
+        />
+      )
+    }
+  ];
 
   return (
     <ListPage

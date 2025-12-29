@@ -4,25 +4,26 @@
 - Dvara
 
 ## Scope
-- Keep data and workflows in Firestore wherever possible.
+- Firestore is the source of truth; keep workflows client-side wherever possible.
 - Use Cloud Functions only for server-only tasks or integrity guardrails.
-- Cloud Functions use Python runtime (2nd gen) with Firebase Admin SDK.
+- Cloud Functions use Python runtime (2nd gen) with Firebase Admin SDK when added.
 
 ## Firebase Services
 - Auth: email/password login (username/password).
 - Roles/branch stored in Firestore `users` docs (custom claims optional).
 - Firestore: source of truth for CRM data.
-- Functions: minimal automation and server-side actions.
+- Functions: minimal automation and server-side actions (optional).
 - Storage: RFP and invoice attachments.
 - Hosting: frontend app delivery (handled in frontend plan).
 
 ## Project Configuration (dvara-crm)
 - `.firebaserc` sets the default project to `dvara-crm`.
-- `firebase.json` wires Firestore rules and indexes to:
+- `firebase.json` wires Firestore and Storage rules/indexes to:
   - `backend/firestore.rules`
   - `backend/firestore.indexes.json`
+  - `backend/storage.rules`
 - Deploy rules/indexes with:
-  - `firebase deploy --only firestore:rules,firestore:indexes`
+  - `firebase deploy --only firestore:rules,firestore:indexes,storage`
 
 ## Priority Order (Build First -> Later)
 Focus on quick, working flows with minimal Functions.
@@ -37,17 +38,17 @@ Focus on quick, working flows with minimal Functions.
 ### P1: Core CRM Data
 - [x] Create/list for `primary_people` and `households` (batch write on create).
 - [x] Edit flows for `primary_people` and `households`.
-- [ ] Delete flows for `primary_people` and `households`.
+- [x] Delete flows for `primary_people` and `households`.
 - [x] Create/list for `products`, `interactions`, `tasks`.
-- [ ] Edit/delete flows for `products`, `interactions`, `tasks`.
+- [x] Edit/delete flows for `products`, `interactions`, `tasks`.
 - [x] Client-side batch writes for:
   - Person + household create.
   - Interaction with follow-up task creation.
-- [ ] Queries for dashboards and "pending follow-ups".
+- [x] Queries for dashboards and pending follow-ups.
 
 ### P2: Standard CRM Features
-- [ ] CRUD for `opportunities`, `meetings`, `phone_calls`, `rfps`, `invoices`.
-- [ ] Storage paths for RFP and invoice attachments.
+- [x] CRUD for `opportunities`, `meetings`, `phone_calls`, `rfps`, `invoices`.
+- [x] Storage paths for RFP and invoice attachments.
 
 ### P3: Minimal Functions (Only if needed)
 - [ ] `sync_user_role_claims` for role + branch claims.
@@ -60,6 +61,7 @@ Focus on quick, working flows with minimal Functions.
 - `backend/functions/src/` - helpers (auth, firestore, validators).
 - `backend/firestore.rules` - security rules.
 - `backend/firestore.indexes.json` - composite indexes.
+- `backend/storage.rules` - storage rules for attachments.
 
 ## Firestore Collections (interlinked, low redundancy)
 Shared fields on most docs: `created_at`, `updated_at`, `created_by`, `branch`,
@@ -77,34 +79,44 @@ collections; resolve display values in the client.
   - lightweight context fields from `vision.md`
   - `primary_person_id`
 - `products`
-  - `product_type`, `status`, `amount`, `primary_person_id`
+  - `product_name`, `product_type`, `status`, `amount`, `primary_person_id`
 - `interactions`
-  - `interaction_type`, `interaction_date`, `outcome`, `next_action_date`
+  - `interaction_title`, `interaction_type`, `interaction_date`, `outcome`, `next_action_date`
   - `primary_person_id`, `linked_product_id`
 - `tasks`
   - `task_title`, `due_date`, `status`, `linked_interaction_id`
   - `task_type` (FollowUp / SuggestedInteraction / System)
-  - `primary_person_id` (for person-level task views)
+  - `primary_person_id`
   - `source_ref` (doc path that triggered the task)
 - `opportunities`
-  - `stage`, `value`, `owner_user_id`, `primary_person_id` (optional)
+  - `opportunity_name`, `stage`, `value`, `owner_user_id`, `primary_person_id` (optional)
 - `meetings`
-  - `scheduled_at`, `location`, `notes`, `attendee_ids`
+  - `meeting_title`, `scheduled_at`, `location`, `notes`, `attendee_ids`
 - `phone_calls`
   - `call_time`, `duration`, `outcome`, `notes`, `primary_person_id`
 - `rfps`
-  - `status`, `due_date`, `attachments` (Storage paths), `primary_person_id` (optional)
+  - `rfp_title`, `status`, `due_date`, `notes`
+  - `primary_person_id` (optional)
+  - `attachment_name`, `attachment_path`, `attachment_url`
 - `invoices`
-  - `status`, `amount`, `line_items`, `pdf_path`, `primary_person_id` (optional)
+  - `invoice_title`, `status`, `amount`
+  - `primary_person_id` (optional)
+  - `attachment_name`, `attachment_path`, `attachment_url`
 - `users`
-  - `role` (Admin / BranchManager / FieldOfficer), `branch`, `display_name`
+  - `role` (Admin / BranchManager / FieldOfficer), `branch`, `display_name`, `email`
+- `automation_logs`
+  - `action`, `source_ref`, `branch`, `created_by`, `details`, `created_at`
+
+## Automation (Client-side)
+- Automation runs in the client to minimize Functions.
+- Each automation writes a record in `automation_logs` for traceability.
 
 ## Functions (Python)
 
-### Minimal Functions (required)
+### Minimal Functions (optional)
 - `generate_invoice_pdf` (HTTPS callable)
   - Create a PDF (server-side) and store in Storage.
-  - Update `invoices/{id}.pdf_path`.
+  - Update `invoices/{id}.attachment_path` and `attachment_url`.
 - `sync_user_role_claims` (HTTPS callable)
   - Set Auth custom claims from `users` doc.
 
@@ -129,14 +141,14 @@ only backfill when a required field or task is missing.
 
 ### Idempotency Rules
 - Use deterministic `task_type + source_ref` to prevent duplicate system tasks.
-- Use Firestore transactions for all automation writes.
+- Use Firestore transactions for all automation writes (if moved to Functions).
 
 ## Security Rules (Summary)
 - All reads/writes require authenticated users.
 - Branch-scoped access: `doc.branch == users/{uid}.branch`.
 - Users can read/write their own profile; Admins can manage any profile.
-- Clients cannot write server-managed fields (`risk_status`, system tasks).
-- Auth uses email/password login for all roles (no custom claims required).
+- Deletes allowed for same-branch documents.
+- Clients avoid writing server-managed fields (`risk_status`, system tasks).
 
 ## Security Rules (Concrete Outline)
 Rules should be explicit about auth, branch scoping, and server-managed fields.
@@ -170,7 +182,8 @@ service cloud.firestore {
 
     match /{collection}/{docId} {
       allow read: if isSignedIn() && sameBranch(resource.data);
-      allow create, update, delete: if isSignedIn() && sameBranch(request.resource.data);
+      allow create, update: if isSignedIn() && sameBranch(request.resource.data);
+      allow delete: if isSignedIn() && sameBranch(resource.data);
     }
   }
 }
@@ -179,96 +192,28 @@ service cloud.firestore {
 Notes:
 - Block writes to server-managed fields in client code (and optionally add
   validation in Functions for guardrails).
-- Set custom claims for `role` and `branch` via `sync_user_role_claims`.
+- Set custom claims for `role` and `branch` via `sync_user_role_claims` if desired.
 
 ## Storage
 - Store attachments under paths:
   - `rfps/{rfpId}/...`
   - `invoices/{invoiceId}/...`
-- Include metadata in Firestore for quick lookup.
+- Include `attachment_name`, `attachment_path`, and `attachment_url` in Firestore docs.
 
 ## Indexes (Core Queries)
 - `interactions` by `primary_person_id` + `interaction_date`.
-- `tasks` by `assigned_officer` + `status` + `due_date`.
+- `interactions` by `branch` + `interaction_date` (dashboard activity).
+- `tasks` by `assigned_officer_id` + `status` + `due_date`.
+- `tasks` by `branch` + `status` (dashboard queues).
 - `primary_people` by `branch` + `pgpd_stage`.
+- `primary_people` by `branch` + `risk_status`.
 - `products` by `primary_person_id` + `status`.
+- `products` by `branch` + `product_type` + `status`.
+- `households` by `branch` + `primary_person_id`.
 
 ## Indexes (Concrete Definition)
-Add indexes in `backend/firestore.indexes.json` for the following queries:
-
-```json
-{
-  "indexes": [
-    {
-      "collectionGroup": "interactions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "primary_person_id", "order": "ASCENDING" },
-        { "fieldPath": "interaction_date", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "tasks",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "assigned_officer_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "due_date", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "primary_people",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "branch", "order": "ASCENDING" },
-        { "fieldPath": "pgpd_stage", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "products",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "primary_person_id", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "households",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "branch", "order": "ASCENDING" },
-        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "interactions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "branch", "order": "ASCENDING" },
-        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "products",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "branch", "order": "ASCENDING" },
-        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "tasks",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "branch", "order": "ASCENDING" },
-        { "fieldPath": "primary_person_id", "order": "ASCENDING" }
-      ]
-    }
-  ],
-  "fieldOverrides": []
-}
-```
+See `backend/firestore.indexes.json` for the exact deployed indexes.
 
 ## Local Dev and Deploy (Notes)
-- Use Firebase emulators for Auth, Firestore, Functions.
-- Deploy with Firebase CLI for Functions and Firestore rules.
+- Use Firebase emulators for Auth, Firestore, and Storage.
+- Deploy with Firebase CLI for Firestore rules/indexes and Storage rules.

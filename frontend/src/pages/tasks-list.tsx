@@ -1,12 +1,12 @@
 import * as React from "react";
-
 import { AnimatedList, AnimatedListItem } from "@/components/ui/animated-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
 import type { TableFilter } from "@/components/templates/data-table";
-import { listTasksByOfficer, updateTask } from "@/lib/firestore";
+import { RowActions } from "@/components/templates/row-actions";
+import { deleteRecord, listTasksByOfficer, updateTask } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type TaskRow = {
@@ -93,6 +93,16 @@ export function TasksList() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteRecord("tasks", id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete task", err);
+      setError("Failed to delete task.");
+    }
+  };
+
   const filteredRows = rows.filter((row) => {
     if (filtersState.status === "all") {
       return true;
@@ -138,6 +148,16 @@ export function TasksList() {
         >
           {row.status === "Done" ? "Reopen" : "Mark done"}
         </Button>
+      )
+    },
+    {
+      header: "Manage",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/tasks/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this task?"
+        />
       )
     }
   ];

@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getCountFromServer,
   getDoc,
@@ -11,7 +12,8 @@ import {
   updateDoc,
   where,
   writeBatch,
-  type DocumentData
+  type DocumentData,
+  type Query
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
@@ -88,6 +90,15 @@ export async function createPersonWithHousehold(
     branch: person.branch,
     created_at: serverTimestamp(),
     updated_at: serverTimestamp()
+  });
+
+  const logRef = doc(collection(db, "automation_logs"));
+  batch.set(logRef, {
+    action: "person_onboarded",
+    source_ref: `primary_people/${personRef.id}`,
+    branch: person.branch,
+    created_by: person.assigned_officer_id,
+    created_at: serverTimestamp()
   });
 
   await batch.commit();
@@ -275,11 +286,21 @@ export async function updateRecord(
   });
 }
 
+export async function deleteRecord(collectionName: string, id: string) {
+  return deleteDoc(doc(db, collectionName, id));
+}
+
 export async function listRecords(collectionName: string, branch: string): Promise<DocWithId[]> {
   const snapshot = await getDocs(
     query(collection(db, collectionName), where("branch", "==", branch))
   );
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+}
+
+async function deleteDocsByQuery(queryRef: Query<DocumentData>) {
+  const snapshot = await getDocs(queryRef);
+  if (snapshot.empty) return;
+  await Promise.all(snapshot.docs.map((docSnap) => deleteDoc(docSnap.ref)));
 }
 
 export async function getHouseholdByPerson(branch: string, personId: string) {
@@ -358,6 +379,68 @@ export async function listTasksByPerson(branch: string, personId: string): Promi
     )
   );
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+}
+
+export async function deletePersonWithRelations(branch: string, personId: string) {
+  await Promise.all([
+    deleteDocsByQuery(
+      query(
+        collection(db, "households"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "products"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "interactions"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "tasks"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "opportunities"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "phone_calls"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "rfps"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    ),
+    deleteDocsByQuery(
+      query(
+        collection(db, "invoices"),
+        where("branch", "==", branch),
+        where("primary_person_id", "==", personId)
+      )
+    )
+  ]);
+  await deleteRecord("primary_people", personId);
 }
 
 export async function listTasksByBranch(branch: string): Promise<DocWithId[]> {

@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
-import { listPeople } from "@/lib/firestore";
+import { RowActions } from "@/components/templates/row-actions";
+import { deletePersonWithRelations, listPeople } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type PersonRow = {
@@ -13,33 +14,6 @@ type PersonRow = {
   pgpdStage: string;
   riskStatus: "At Risk" | "Normal";
 };
-
-const columns: ColumnDef<PersonRow>[] = [
-  {
-    header: "Name",
-    cell: (row) => (
-      <Link className="font-medium text-primary hover:underline" to={`/app/people/${row.id}`}>
-        {row.fullName}
-      </Link>
-    )
-  },
-  {
-    header: "Village",
-    cell: (row) => row.village
-  },
-  {
-    header: "PGPD Stage",
-    cell: (row) => <Badge variant="secondary">{row.pgpdStage}</Badge>
-  },
-  {
-    header: "Risk",
-    cell: (row) => (
-      <Badge variant={row.riskStatus === "At Risk" ? "destructive" : "secondary"}>
-        {row.riskStatus}
-      </Badge>
-    )
-  }
-];
 
 export function PeopleList() {
   const navigate = useNavigate();
@@ -95,6 +69,57 @@ export function PeopleList() {
       .toLowerCase();
     return target.includes(search.toLowerCase());
   });
+
+  const handleDelete = async (id: string) => {
+    if (!profile?.branch) {
+      setError("Missing branch information.");
+      return;
+    }
+    try {
+      await deletePersonWithRelations(profile.branch, id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete person", err);
+      setError("Failed to delete person.");
+    }
+  };
+
+  const columns: ColumnDef<PersonRow>[] = [
+    {
+      header: "Name",
+      cell: (row) => (
+        <Link className="font-medium text-primary hover:underline" to={`/app/people/${row.id}`}>
+          {row.fullName}
+        </Link>
+      )
+    },
+    {
+      header: "Village",
+      cell: (row) => row.village
+    },
+    {
+      header: "PGPD Stage",
+      cell: (row) => <Badge variant="secondary">{row.pgpdStage}</Badge>
+    },
+    {
+      header: "Risk",
+      cell: (row) => (
+        <Badge variant={row.riskStatus === "At Risk" ? "destructive" : "secondary"}>
+          {row.riskStatus}
+        </Badge>
+      )
+    },
+    {
+      header: "Action",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/people/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this person and all linked records?"
+        />
+      )
+    }
+  ];
 
   return (
     <ListPage

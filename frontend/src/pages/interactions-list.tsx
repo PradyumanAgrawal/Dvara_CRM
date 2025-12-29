@@ -4,8 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
 import type { TableFilter } from "@/components/templates/data-table";
+import { RowActions } from "@/components/templates/row-actions";
 import { INTERACTION_OUTCOMES } from "@/lib/constants";
-import { listInteractions } from "@/lib/firestore";
+import { deleteRecord, listInteractions } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type InteractionRow = {
@@ -18,41 +19,6 @@ type InteractionRow = {
   personName: string;
   officerId: string;
 };
-
-const columns: ColumnDef<InteractionRow>[] = [
-  {
-    header: "Interaction",
-    cell: (row) => row.title
-  },
-  {
-    header: "Type",
-    cell: (row) => <Badge variant="secondary">{row.type}</Badge>
-  },
-  {
-    header: "Date",
-    cell: (row) => row.date
-  },
-  {
-    header: "Outcome",
-    cell: (row) => <Badge variant="secondary">{row.outcome}</Badge>
-  },
-  {
-    header: "Person",
-    cell: (row) => (
-      <Link className="text-primary hover:underline" to={`/app/people/${row.personId}`}>
-        {row.personName}
-      </Link>
-    )
-  },
-  {
-    header: "Action",
-    cell: (row) => (
-      <Link className="text-primary hover:underline" to={`/app/interactions/${row.id}/edit`}>
-        Edit
-      </Link>
-    )
-  }
-];
 
 export function InteractionsList() {
   const navigate = useNavigate();
@@ -149,6 +115,53 @@ export function InteractionsList() {
       .toLowerCase();
     return target.includes(search.toLowerCase());
   });
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteRecord("interactions", id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete interaction", err);
+      setError("Failed to delete interaction.");
+    }
+  };
+
+  const columns: ColumnDef<InteractionRow>[] = [
+    {
+      header: "Interaction",
+      cell: (row) => row.title
+    },
+    {
+      header: "Type",
+      cell: (row) => <Badge variant="secondary">{row.type}</Badge>
+    },
+    {
+      header: "Date",
+      cell: (row) => row.date
+    },
+    {
+      header: "Outcome",
+      cell: (row) => <Badge variant="secondary">{row.outcome}</Badge>
+    },
+    {
+      header: "Person",
+      cell: (row) => (
+        <Link className="text-primary hover:underline" to={`/app/people/${row.personId}`}>
+          {row.personName}
+        </Link>
+      )
+    },
+    {
+      header: "Action",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/interactions/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this interaction?"
+        />
+      )
+    }
+  ];
 
   return (
     <ListPage

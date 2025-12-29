@@ -1,14 +1,14 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   buildInitialValues,
   FieldRenderer,
   type FieldConfig
 } from "@/components/fields/field-registry";
-import { FormPage } from "@/components/templates/form-page";
 import { Dropzone } from "@/components/kibo/dropzone";
-import { createRecord, updateRecord } from "@/lib/firestore";
+import { FormPage } from "@/components/templates/form-page";
+import { getRecord, updateRecord } from "@/lib/firestore";
 import { uploadAttachment } from "@/lib/storage";
 import { useAuth } from "@/providers/auth-provider";
 
@@ -48,14 +48,62 @@ const fields: FieldConfig[] = [
   }
 ];
 
-export function InvoicesCreate() {
+export function InvoicesEdit() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const { profile } = useAuth();
-  const [values, setValues] = React.useState(() => buildInitialValues(fields));
+  const [values, setValues] = React.useState<Record<string, string>>(
+    () => buildInitialValues(fields)
+  );
   const [file, setFile] = React.useState<File | null>(null);
   const [fileName, setFileName] = React.useState("");
+  const [existingAttachment, setExistingAttachment] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!id) {
+      setError("Missing invoice ID.");
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
+    getRecord("invoices", id)
+      .then((doc) => {
+        if (!isMounted) return;
+        if (!doc) {
+          setError("Invoice not found.");
+          return;
+        }
+        setValues((prev) => ({
+          ...prev,
+          invoice_title: String(doc.invoice_title ?? ""),
+          status: String(doc.status ?? ""),
+          amount: String(doc.amount ?? ""),
+          primary_person_id: String(doc.primary_person_id ?? "")
+        }));
+        setExistingAttachment(String(doc.attachment_name ?? ""));
+      })
+      .catch((fetchError) => {
+        console.error("Failed to load invoice", fetchError);
+        if (isMounted) {
+          setError("Unable to load invoice.");
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   const handleFieldChange = (name: string, nextValue: string) => {
     setValues((prev) => ({ ...prev, [name]: nextValue }));
@@ -68,8 +116,8 @@ export function InvoicesCreate() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!profile?.branch) {
-      setError("Missing branch information.");
+    if (!id || !profile?.branch) {
+      setError("Missing invoice or branch information.");
       return;
     }
 
@@ -82,43 +130,48 @@ export function InvoicesCreate() {
     setError(null);
     setSubmitting(true);
     try {
-      const docRef = await createRecord("invoices", {
+      await updateRecord("invoices", id, {
         invoice_title: values.invoice_title,
         status: values.status,
         amount,
         primary_person_id: values.primary_person_id || undefined,
-        attachment_name: fileName || undefined,
         branch: profile.branch
       });
-      if (file && docRef?.id) {
-        const uploaded = await uploadAttachment(
-          `invoices/${docRef.id}/${file.name}`,
-          file
-        );
-        await updateRecord("invoices", docRef.id, {
+
+      if (file) {
+        const uploaded = await uploadAttachment(`invoices/${id}/${file.name}`, file);
+        await updateRecord("invoices", id, {
           attachment_name: uploaded.name,
           attachment_path: uploaded.path,
           attachment_url: uploaded.url
         });
       }
+
       navigate("/app/invoices");
     } catch (submitError) {
-      console.error("Failed to create invoice", submitError);
-      setError("Failed to create invoice. Please try again.");
+      console.error("Failed to update invoice", submitError);
+      setError("Failed to update invoice. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
+  if (loading) {
+    return <div className="text-sm text-muted-foreground">Loading invoice...</div>;
+  }
+
+  if (error) {
+    return <div className="text-sm text-destructive">{error}</div>;
+  }
+
   return (
     <FormPage
-      title="New Invoice"
-      description="Generate invoices and attach PDFs."
+      title="Edit Invoice"
+      description="Update invoice status, amount, or attachments."
       onSubmit={handleSubmit}
-      submitLabel={submitting ? "Saving..." : "Save invoice"}
+      submitLabel={submitting ? "Saving..." : "Save changes"}
       cancelHref="/app/invoices"
     >
-      {error ? <div className="text-sm text-destructive">{error}</div> : null}
       <div className="grid gap-4 md:grid-cols-2">
         {fields.map((field) => (
           <FieldRenderer
@@ -130,13 +183,15 @@ export function InvoicesCreate() {
         ))}
         <div className="space-y-2 md:col-span-2">
           <Dropzone
-            label="Attach invoice PDF"
+            label="Replace invoice attachment"
             description="Upload the invoice PDF"
             accept=".pdf"
             onFileSelect={handleFileSelect}
           />
-          {fileName ? (
-            <p className="text-xs text-muted-foreground">Selected: {fileName}</p>
+          {fileName || existingAttachment ? (
+            <p className="text-xs text-muted-foreground">
+              Current: {fileName || existingAttachment}
+            </p>
           ) : null}
         </div>
       </div>

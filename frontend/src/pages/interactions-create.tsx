@@ -8,7 +8,7 @@ import {
 } from "@/components/fields/field-registry";
 import { FormPage } from "@/components/templates/form-page";
 import { INTERACTION_OUTCOMES, INTERACTION_TYPES } from "@/lib/constants";
-import { createInteraction, createTask } from "@/lib/firestore";
+import { createInteraction, createTaskIfMissing } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 const fields: FieldConfig[] = [
@@ -106,7 +106,7 @@ export function InteractionsCreate() {
       });
 
       if (values.outcome === "Follow-up Required" && values.next_action_date) {
-        await createTask({
+        await createTaskIfMissing({
           task_title: `Follow-up: ${values.interaction_title}`,
           due_date: values.next_action_date,
           status: "Open",
@@ -115,7 +115,8 @@ export function InteractionsCreate() {
           primary_person_id: values.primary_person_id,
           assigned_officer_id: user.uid,
           source_ref: `interactions/${interactionRef.id}`,
-          branch: profile.branch
+          branch: profile.branch,
+          created_by: user.uid
         });
       }
 

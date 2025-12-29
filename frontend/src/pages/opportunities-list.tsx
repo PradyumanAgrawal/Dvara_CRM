@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { ListPage, type ColumnDef } from "@/components/templates/list-page";
+import { RowActions } from "@/components/templates/row-actions";
 import { formatCurrency } from "@/lib/formatters";
-import { listRecords } from "@/lib/firestore";
+import { deleteRecord, listRecords } from "@/lib/firestore";
 import { useAuth } from "@/providers/auth-provider";
 
 type OpportunityRow = {
@@ -15,29 +16,6 @@ type OpportunityRow = {
   owner: string;
   person: string;
 };
-
-const columns: ColumnDef<OpportunityRow>[] = [
-  {
-    header: "Opportunity",
-    cell: (row) => row.name
-  },
-  {
-    header: "Stage",
-    cell: (row) => <Badge variant="secondary">{row.stage}</Badge>
-  },
-  {
-    header: "Value",
-    cell: (row) => row.value
-  },
-  {
-    header: "Owner",
-    cell: (row) => row.owner
-  },
-  {
-    header: "Primary person",
-    cell: (row) => row.person
-  }
-];
 
 export function OpportunitiesList() {
   const navigate = useNavigate();
@@ -92,6 +70,49 @@ export function OpportunitiesList() {
     const target = [row.name, row.stage, row.owner, row.person].join(" ").toLowerCase();
     return target.includes(search.toLowerCase());
   });
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteRecord("opportunities", id);
+      setRows((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error("Failed to delete opportunity", err);
+      setError("Failed to delete opportunity.");
+    }
+  };
+
+  const columns: ColumnDef<OpportunityRow>[] = [
+    {
+      header: "Opportunity",
+      cell: (row) => row.name
+    },
+    {
+      header: "Stage",
+      cell: (row) => <Badge variant="secondary">{row.stage}</Badge>
+    },
+    {
+      header: "Value",
+      cell: (row) => row.value
+    },
+    {
+      header: "Owner",
+      cell: (row) => row.owner
+    },
+    {
+      header: "Primary person",
+      cell: (row) => row.person
+    },
+    {
+      header: "Action",
+      cell: (row) => (
+        <RowActions
+          editHref={`/app/opportunities/${row.id}/edit`}
+          onDelete={() => handleDelete(row.id)}
+          confirmMessage="Delete this opportunity?"
+        />
+      )
+    }
+  ];
 
   return (
     <ListPage

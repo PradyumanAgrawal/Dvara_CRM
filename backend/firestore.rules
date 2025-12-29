@@ -26,7 +26,8 @@ service cloud.firestore {
 
     match /{collection}/{docId} {
       allow read: if isSignedIn() && sameBranch(resource.data);
-      allow create, update, delete: if isSignedIn() && sameBranch(request.resource.data);
+      allow create, update: if isSignedIn() && sameBranch(request.resource.data);
+      allow delete: if isSignedIn() && sameBranch(resource.data);
     }
   }
 }

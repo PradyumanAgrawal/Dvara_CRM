@@ -8,7 +8,8 @@
 - Tailwind CSS
 - shadcn/ui components (default colorscheme)
 - Magic UI component registry for speed (only components built on shadcn)
-- Firebase Auth (email/password), Firestore, Storage, Functions
+- Kibo UI-inspired blocks (banner, announcement, dropzone)
+- Firebase Auth (email/password), Firestore, Storage
 
 ## Firebase Web Config (dvara-crm)
 Create a Firebase web app in the `dvara-crm` project and set env vars:
@@ -20,8 +21,7 @@ Create a Firebase web app in the `dvara-crm` project and set env vars:
 - `VITE_FIREBASE_APP_ID`
 - `VITE_FIREBASE_MEASUREMENT_ID` (optional)
 
-Initialize Firebase in `src/lib/firebase.ts` and export `auth`, `db`, `storage`,
-and `functions` for reuse.
+Initialize Firebase in `src/lib/firebase.ts` and export `auth`, `db`, and `storage`.
 
 ## Priority Order (Build First -> Later)
 Focus on fast delivery with reusable components and minimal custom UI.
@@ -37,25 +37,28 @@ Focus on fast delivery with reusable components and minimal custom UI.
 - [x] Reusable `ListPage`, `DetailPage`, `FormPage` scaffolds.
 - [x] Shared form fields via `FieldRegistry`.
 - [x] DataTable wrapper with search + filters.
+- [x] Row actions for edit + delete.
 
 ### P2: Core CRM Screens
-- [x] Primary people list + create + detail scaffolds.
-- [x] Primary people edit flow (profile + household).
-- [x] Products list and creation flow.
-- [x] Interactions list and creation flow.
-- [x] Tasks list + status updates + follow-up visibility.
+- [x] Primary people list + create + detail flows.
+- [x] Primary people edit flow (profile + household + risk flags).
+- [x] Primary people delete flow (cascade to linked records).
+- [x] Products list/create/edit/delete.
+- [x] Interactions list/create/edit/delete.
+- [x] Tasks list + status updates + edit/delete.
 
 ### P3: Standard CRM Screens
-- [x] Opportunities, meetings, phone calls, RFPs, invoices (list + create).
-- [ ] File upload UI for RFPs/invoices.
-- [x] Reports page with basic counts (static placeholders).
+- [x] Opportunities, meetings, phone calls, RFPs, invoices (CRUD).
+- [x] File upload UI for RFPs/invoices (Storage + links).
+- [x] Reports page with live Firestore counts and officer summary.
+- [x] User settings for Admin role (edit roles/branch).
 
 ## App Structure
 - Landing page for unauthenticated users with a login CTA.
 - Auth-guarded SPA with role-aware navigation.
 - App shell uses a sidebar for sections and breadcrumbs for subsections.
 - Each subsection supports CRUD with reusable page templates.
-- Global search and "quick add" actions.
+- Global search and quick actions on lists.
 
 ## Routes and Pages
 
@@ -68,30 +71,42 @@ Focus on fast delivery with reusable components and minimal custom UI.
 - `/app/setup` - Profile setup (role + branch).
 - `/app/people` - Primary people list.
 - `/app/people/new` - Create primary person.
+- `/app/people/:id` - Primary person detail.
 - `/app/people/:id/edit` - Edit primary person.
-- `/app/people/:id` - Primary person detail with tabs:
-  - Overview
-  - Household
-  - Products
-  - Interactions
-  - Tasks
 
 ### CRM Features
-- `/app/products` - Product list and filters.
-- `/app/interactions` - Interaction log and filters.
-- `/app/tasks` - Pending and completed tasks.
-- `/app/opportunities` - Pipeline list view (stage, value, owner).
-- `/app/meetings` - Meetings list and scheduler view.
+- `/app/products` - Product list.
+- `/app/products/new` - Create product.
+- `/app/products/:id/edit` - Edit product.
+- `/app/interactions` - Interaction list.
+- `/app/interactions/new` - Create interaction.
+- `/app/interactions/:id/edit` - Edit interaction.
+- `/app/tasks` - Task list.
+- `/app/tasks/:id/edit` - Edit task.
+- `/app/opportunities` - Pipeline list.
+- `/app/opportunities/new` - Create opportunity.
+- `/app/opportunities/:id/edit` - Edit opportunity.
+- `/app/meetings` - Meetings list.
+- `/app/meetings/new` - Create meeting.
+- `/app/meetings/:id/edit` - Edit meeting.
 - `/app/phone-calls` - Call log list.
-- `/app/rfps` - RFP tracker list + detail page.
-- `/app/invoices` - Invoice list + detail page.
+- `/app/phone-calls/new` - Create phone call.
+- `/app/phone-calls/:id/edit` - Edit phone call.
+- `/app/rfps` - RFP tracker list.
+- `/app/rfps/new` - Create RFP.
+- `/app/rfps/:id/edit` - Edit RFP.
+- `/app/invoices` - Invoice list.
+- `/app/invoices/new` - Create invoice.
+- `/app/invoices/:id/edit` - Edit invoice.
 - `/app/reports` - Lightweight metrics.
 - `/app/settings/users` - User and role management (Admin only).
+- `/app/settings/users/:id/edit` - Edit user.
 
 ## User Flow
 - Landing page -> Login (if not authenticated).
 - Login -> Profile setup (first time) -> App shell with sidebar sections.
 - Breadcrumbs guide users through list -> detail -> edit flows.
+- CRUD flows are accessible from list action buttons.
 
 ## Auth Flow (Email/Password)
 - Login uses `signInWithEmailAndPassword`.
@@ -99,38 +114,6 @@ Focus on fast delivery with reusable components and minimal custom UI.
 - If `users/{uid}` is missing, redirect to `/app/setup`.
 - Fetch `users/{uid}` after login to load role and branch.
 - Logout uses `signOut`.
-
-## Routing Skeleton (React Router)
-Define a reusable route tree to support fast CRUD development.
-
-```tsx
-// src/routes.tsx
-const routes = [
-  { path: "/", element: <Landing /> },
-  { path: "/login", element: <Login /> },
-  {
-    path: "/app",
-    element: <AppShell />,
-    children: [
-      { index: true, element: <Dashboard /> },
-      { path: "setup", element: <ProfileSetup /> },
-      { path: "people", element: <PeopleList /> },
-      { path: "people/new", element: <PeopleCreate /> },
-      { path: "people/:id", element: <PeopleDetail /> },
-      { path: "products", element: <ProductsList /> },
-      { path: "interactions", element: <InteractionsList /> },
-      { path: "tasks", element: <TasksList /> },
-      { path: "opportunities", element: <OpportunitiesList /> },
-      { path: "meetings", element: <MeetingsList /> },
-      { path: "phone-calls", element: <PhoneCallsList /> },
-      { path: "rfps", element: <RfpsList /> },
-      { path: "invoices", element: <InvoicesList /> },
-      { path: "reports", element: <Reports /> },
-      { path: "settings/users", element: <UserSettings /> }
-    ]
-  }
-];
-```
 
 ## Page Flows (Feature Coverage)
 
@@ -148,7 +131,7 @@ const routes = [
 - Suggested task: "Insurance discussion".
 
 ### Stability -> Diversify
-- Mark loan as Closed or reach stable interaction criteria.
+- Mark loan as Closed.
 - Suggested task: "Savings / pension conversation".
 
 ### Follow-up Discipline
@@ -160,20 +143,25 @@ const routes = [
 - Meetings: schedule, notes, attendee list.
 - Phone calls: log outcomes and notes.
 - RFPs: status tracking and attachment upload.
-- Invoices: create invoice, generate PDF, store download link.
+- Invoices: create invoice, upload PDF, store download link.
 
 ## UI Components (shadcn)
 Use default shadcn styling and tokens.
-- Layout: `Card`, `Separator`, `Tabs`, `Badge`, `Breadcrumb`, `Sheet`.
-- Actions: `Button`, `DropdownMenu`, `Dialog`, `AlertDialog`.
-- Forms: `Form`, `Input`, `Select`, `Textarea`, `DatePicker`, `Combobox`.
-- Lists: `Table`, `DataTable`, `Pagination`, `Command` (global search).
-- Feedback: `Toast`, `Tooltip`, `Progress`, `Skeleton`.
+- Layout: `Card`, `Separator`, `Tabs`, `Badge`, `Breadcrumb`.
+- Actions: `Button`.
+- Forms: `Form`, `Input`, `Select`, `Textarea`, `Checkbox`.
+- Lists: `Table`, `DataTable`, `Pagination`.
+- Feedback: `Toast` (optional), `Skeleton`.
 
 ## Magic UI Usage
-- Use Magic UI registry to pull layout and animation helpers.
-- Only keep variants that use shadcn primitives and default colors.
+- Landing page uses `Marquee`, `NumberTicker`, and `AnimatedShinyText`.
+- Keep variants that use shadcn primitives and default colors.
 - Avoid custom color palettes or theme overrides.
+
+## Kibo UI Usage
+- `Announcement` for marketing highlights on landing.
+- `Banner` for dashboard and landing callouts.
+- `Dropzone` for attachment uploads.
 
 ## Data Access Patterns
 - Use Firebase Auth (email/password) for sessions and `users/{uid}` profile lookup.
@@ -181,30 +169,19 @@ Use default shadcn styling and tokens.
 - Firestore queries scoped by `branch` and `assigned_officer_id`.
 - Real-time listeners for dashboards and task lists.
 - Batch writes for multi-entity create flows (person + household + first task).
-
-## Forms and Validation
-- Use `react-hook-form` + `zod` for validation.
-- Validate required fields and date constraints.
+- Delete flows:
+  - `primary_people` deletes cascade to linked records.
+  - Other collections delete the current record only.
 
 ## Uploads
-- RFP and invoice attachments upload to Storage.
-- Store storage paths in Firestore docs.
+- RFP and invoice attachments upload to Storage via `Dropzone`.
+- Store `attachment_name`, `attachment_path`, and `attachment_url` in Firestore docs.
 
 ## Empty and Error States
 - Empty list states with CTA buttons.
-- Inline error toasts for Firestore/Functions failures.
+- Inline error messaging for Firestore failures.
 
 ## Quick Development and Reuse
 - Use shared page templates for list/detail/edit views.
 - Reuse form field components and schemas across entities.
 - Keep components thin and data-driven to speed iteration.
-
-## Reusable Page Templates (CRUD)
-- `ListPage` template: toolbar + filters + table + pagination + create CTA.
-- `DetailPage` template: header summary + tabs + related entities.
-- `FormPage` template: form fields + validation + submit/cancel actions.
-
-## Component Reuse Strategy
-- Build a `FieldRegistry` (text, select, date, textarea) for all forms.
-- Use a `DataTable` wrapper for common sorting and filtering.
-- Keep entity configs in a single map (labels, fields, collection paths).
