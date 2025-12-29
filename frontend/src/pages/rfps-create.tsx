@@ -7,9 +7,9 @@ import {
   type FieldConfig
 } from "@/components/fields/field-registry";
 import { FormPage } from "@/components/templates/form-page";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createRecord } from "@/lib/firestore";
+import { Dropzone } from "@/components/kibo/dropzone";
+import { createRecord, updateRecord } from "@/lib/firestore";
+import { uploadAttachment } from "@/lib/storage";
 import { useAuth } from "@/providers/auth-provider";
 
 const fields: FieldConfig[] = [
@@ -51,6 +51,7 @@ export function RfpsCreate() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const [values, setValues] = React.useState(() => buildInitialValues(fields));
+  const [file, setFile] = React.useState<File | null>(null);
   const [fileName, setFileName] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -59,9 +60,9 @@ export function RfpsCreate() {
     setValues((prev) => ({ ...prev, [name]: nextValue }));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setFileName(file?.name ?? "");
+  const handleFileSelect = (nextFile: File | null) => {
+    setFile(nextFile);
+    setFileName(nextFile?.name ?? "");
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -74,7 +75,7 @@ export function RfpsCreate() {
     setError(null);
     setSubmitting(true);
     try {
-      await createRecord("rfps", {
+      const docRef = await createRecord("rfps", {
         rfp_title: values.rfp_title,
         status: values.status,
         due_date: values.due_date,
@@ -82,6 +83,14 @@ export function RfpsCreate() {
         attachment_name: fileName || undefined,
         branch: profile.branch
       });
+      if (file && docRef?.id) {
+        const uploaded = await uploadAttachment(`rfps/${docRef.id}/${file.name}`, file);
+        await updateRecord("rfps", docRef.id, {
+          attachment_name: uploaded.name,
+          attachment_path: uploaded.path,
+          attachment_url: uploaded.url
+        });
+      }
       navigate("/app/rfps");
     } catch (submitError) {
       console.error("Failed to create RFP", submitError);
@@ -109,9 +118,13 @@ export function RfpsCreate() {
             onChange={(nextValue) => handleFieldChange(field.name, nextValue)}
           />
         ))}
-        <div className="space-y-2">
-          <Label htmlFor="rfp_attachment">Attachment</Label>
-          <Input id="rfp_attachment" type="file" onChange={handleFileChange} />
+        <div className="space-y-2 md:col-span-2">
+          <Dropzone
+            label="Attach RFP document"
+            description="PDFs or docs up to 10MB"
+            accept=".pdf,.doc,.docx"
+            onFileSelect={handleFileSelect}
+          />
           {fileName ? (
             <p className="text-xs text-muted-foreground">Selected: {fileName}</p>
           ) : null}
