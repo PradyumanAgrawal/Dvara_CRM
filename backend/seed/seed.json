@@ -1,0 +1,60 @@
+{
+  "collections": {
+    "users": [
+      {
+        "id": "OFFICER_UID",
+        "data": {
+          "role": "FieldOfficer",
+          "branch": "Dvara-Main",
+          "display_name": "Field Officer 1"
+        }
+      }
+    ],
+    "primary_people": [
+      {
+        "id": "person_001",
+        "data": {
+          "full_name": "Sita Devi",
+          "mobile_number": "9000000000",
+          "village": "Lakshmipur",
+          "branch": "Dvara-Main",
+          "role": "Primary Earner",
+          "pgpd_stage": "Plan",
+          "risk_flags": [],
+          "risk_status": "Normal",
+          "assigned_officer_id": "OFFICER_UID",
+          "created_by": "OFFICER_UID"
+        }
+      }
+    ],
+    "households": [
+      {
+        "id": "household_001",
+        "data": {
+          "household_name": "Sita Devi Household",
+          "primary_person_id": "person_001",
+          "primary_earning_source": "Agriculture",
+          "seasonality_profile": "Kharif",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_UID"
+        }
+      }
+    ],
+    "tasks": [
+      {
+        "id": "task_001",
+        "data": {
+          "task_title": "Initial financial assessment visit",
+          "due_date": "2024-01-15",
+          "status": "Open",
+          "task_type": "System",
+          "assigned_officer_id": "OFFICER_UID",
+          "primary_person_id": "person_001",
+          "source_ref": "primary_people/person_001",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_UID"
+        }
+      }
+    ]
+  }
+}

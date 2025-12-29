@@ -4,16 +4,24 @@ service cloud.firestore {
     function isSignedIn() {
       return request.auth != null;
     }
-    function hasRole(role) {
-      return request.auth.token.role == role;
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function userRole() {
+      return userDoc().role;
+    }
+    function userBranch() {
+      return userDoc().branch;
     }
     function sameBranch(resourceData) {
-      return request.auth.token.branch == resourceData.branch;
+      return userBranch() == resourceData.branch;
     }
 
     match /users/{userId} {
-      allow read: if isSignedIn() && hasRole("Admin");
-      allow write: if isSignedIn() && hasRole("Admin");
+      allow read: if isSignedIn() && (userId == request.auth.uid || userRole() == "Admin");
+      allow create: if isSignedIn() && userId == request.auth.uid;
+      allow update: if isSignedIn() && (userId == request.auth.uid || userRole() == "Admin");
+      allow delete: if isSignedIn() && userRole() == "Admin";
     }
 
     match /{collection}/{docId} {
