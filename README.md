@@ -58,8 +58,24 @@ Seed data lives in `backend/seed/seed.json`. To seed Firestore:
 ```bash
 # Requires application default credentials
 # gcloud auth application-default login
-python backend/seed/seed.py
+python3 backend/seed/seed.py
 ```
+
+The seed file uses placeholders for role-specific UIDs and rolling dates. Set the UID
+environment variables before running the script:
+
+```bash
+export SEED_ADMIN_UID="uid-from-firebase-auth"
+export SEED_MANAGER_UID="uid-from-firebase-auth"
+export SEED_OFFICER_1_UID="uid-from-firebase-auth"
+export SEED_OFFICER_2_UID="uid-from-firebase-auth"
+export SEED_EAST_MANAGER_UID="uid-from-firebase-auth"
+export SEED_EAST_OFFICER_UID="uid-from-firebase-auth"
+python3 backend/seed/seed.py
+```
+
+Date placeholders like `{{TODAY_MINUS_3}}` or `{{TODAY_PLUS_2}}` are resolved at runtime
+so reports and follow-ups always show recent activity.
 
 ## Notes
 - Workflow automation runs client-side and writes to `automation_logs`.

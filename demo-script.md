@@ -3,6 +3,7 @@
 ## Prep
 - Use an Admin account with a branch assigned.
 - Ensure Storage rules are deployed (for attachment uploads).
+- Use the seeded FieldOfficer and BranchManager accounts to show role perspectives.
 
 ## 1) Landing and Login
 - Start on `/` and highlight the Dvara hero narrative.
@@ -47,6 +48,11 @@
 - Open **Settings -> Users**.
 - Edit a user's role or branch assignment.
 
-## 11) Deletion Flow
+## 11) Role Perspectives
+- Log in as **Field Officer** and show the task queue and follow-ups list.
+- Log in as **Branch Manager** and show Reports + branch-wide list views.
+- Log back in as **Admin** to show user management controls.
+
+## 12) Deletion Flow
 - From any list, delete a record via the action buttons.
 - Confirm the row is removed from the list.
