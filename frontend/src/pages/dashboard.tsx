@@ -63,7 +63,7 @@ export function Dashboard() {
     let isMounted = true;
     setLoading(true);
     setError(null);
-    Promise.all([listTasksByOfficer(user.uid), listPeopleAtRisk(profile.branch)])
+    Promise.all([listTasksByOfficer(user.uid, profile.branch), listPeopleAtRisk(profile.branch)])
       .then(([taskData, peopleData]) => {
         if (!isMounted) return;
         setTasks(taskData);

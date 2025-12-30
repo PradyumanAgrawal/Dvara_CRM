@@ -51,7 +51,10 @@ export function Sidebar() {
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
                       size="sm"
-                      className={cn("w-full justify-start", isActive && "text-foreground")}
+                      className={cn(
+                        "w-full justify-start text-muted-foreground transition-colors",
+                        isActive && "bg-primary/10 text-primary hover:bg-primary/15"
+                      )}
                     >
                       {item.label}
                     </Button>

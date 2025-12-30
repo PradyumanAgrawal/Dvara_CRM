@@ -43,7 +43,7 @@ export function ListPage<T>({
   emptyDescription
 }: ListPageProps<T>) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in-0 slide-in-from-bottom-2 duration-700 motion-reduce:animate-none">
       <PageHeader
         title={title}
         description={description}

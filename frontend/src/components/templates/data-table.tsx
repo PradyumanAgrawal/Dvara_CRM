@@ -120,7 +120,11 @@ export function DataTable<T>({
           </TableHeader>
           <TableBody>
             {data.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
+              <TableRow
+                key={rowIndex}
+                className="animate-in fade-in-0 slide-in-from-bottom-1 duration-500 motion-reduce:animate-none"
+                style={{ animationDelay: `${rowIndex * 35}ms` }}
+              >
                 {columns.map((column, colIndex) => (
                   <TableCell key={`${rowIndex}-${colIndex}`} className={column.className}>
                     {column.cell(row)}

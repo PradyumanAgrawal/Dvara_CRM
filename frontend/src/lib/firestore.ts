@@ -119,7 +119,7 @@ export async function getPerson(id: string) {
 }
 
 export async function listPeople(branch: string): Promise<DocWithId[]> {
-  const snapshot = await getDocs(query(collection(db, "primary_people"), where("branch", "==", branch)));
+  const snapshot = await getDocs(collection(db, "primary_people"));
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
@@ -142,7 +142,7 @@ export async function createProduct(input: ProductInput) {
 }
 
 export async function listProducts(branch: string): Promise<DocWithId[]> {
-  const snapshot = await getDocs(query(collection(db, "products"), where("branch", "==", branch)));
+  const snapshot = await getDocs(collection(db, "products"));
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
@@ -173,7 +173,7 @@ export async function createInteraction(input: InteractionInput) {
 }
 
 export async function listInteractions(branch: string): Promise<DocWithId[]> {
-  const snapshot = await getDocs(query(collection(db, "interactions"), where("branch", "==", branch)));
+  const snapshot = await getDocs(collection(db, "interactions"));
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
@@ -195,9 +195,15 @@ export async function createTask(input: {
   });
 }
 
-export async function listTasksByOfficer(assigned_officer_id: string): Promise<DocWithId[]> {
+export async function listTasksByOfficer(
+  assigned_officer_id: string,
+  branch: string
+): Promise<DocWithId[]> {
   const snapshot = await getDocs(
-    query(collection(db, "tasks"), where("assigned_officer_id", "==", assigned_officer_id))
+    query(
+      collection(db, "tasks"),
+      where("assigned_officer_id", "==", assigned_officer_id)
+    )
   );
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
@@ -291,9 +297,7 @@ export async function deleteRecord(collectionName: string, id: string) {
 }
 
 export async function listRecords(collectionName: string, branch: string): Promise<DocWithId[]> {
-  const snapshot = await getDocs(
-    query(collection(db, collectionName), where("branch", "==", branch))
-  );
+  const snapshot = await getDocs(collection(db, collectionName));
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
@@ -307,7 +311,6 @@ export async function getHouseholdByPerson(branch: string, personId: string) {
   const snapshot = await getDocs(
     query(
       collection(db, "households"),
-      where("branch", "==", branch),
       where("primary_person_id", "==", personId)
     )
   );
@@ -349,7 +352,6 @@ export async function listProductsByPerson(branch: string, personId: string): Pr
   const snapshot = await getDocs(
     query(
       collection(db, "products"),
-      where("branch", "==", branch),
       where("primary_person_id", "==", personId)
     )
   );
@@ -363,7 +365,6 @@ export async function listInteractionsByPerson(
   const snapshot = await getDocs(
     query(
       collection(db, "interactions"),
-      where("branch", "==", branch),
       where("primary_person_id", "==", personId)
     )
   );
@@ -374,7 +375,6 @@ export async function listTasksByPerson(branch: string, personId: string): Promi
   const snapshot = await getDocs(
     query(
       collection(db, "tasks"),
-      where("branch", "==", branch),
       where("primary_person_id", "==", personId)
     )
   );
@@ -386,56 +386,48 @@ export async function deletePersonWithRelations(branch: string, personId: string
     deleteDocsByQuery(
       query(
         collection(db, "households"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "products"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "interactions"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "tasks"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "opportunities"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "phone_calls"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "rfps"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     ),
     deleteDocsByQuery(
       query(
         collection(db, "invoices"),
-        where("branch", "==", branch),
         where("primary_person_id", "==", personId)
       )
     )
@@ -444,7 +436,7 @@ export async function deletePersonWithRelations(branch: string, personId: string
 }
 
 export async function listTasksByBranch(branch: string): Promise<DocWithId[]> {
-  const snapshot = await getDocs(query(collection(db, "tasks"), where("branch", "==", branch)));
+  const snapshot = await getDocs(collection(db, "tasks"));
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
@@ -452,7 +444,6 @@ export async function listPeopleAtRisk(branch: string): Promise<DocWithId[]> {
   const snapshot = await getDocs(
     query(
       collection(db, "primary_people"),
-      where("branch", "==", branch),
       where("risk_status", "==", "At Risk")
     )
   );
@@ -467,7 +458,6 @@ export async function countProductsByTypeStatus(
   const snapshot = await getCountFromServer(
     query(
       collection(db, "products"),
-      where("branch", "==", branch),
       where("product_type", "==", product_type),
       where("status", "==", status)
     )
@@ -479,7 +469,6 @@ export async function countPeopleByRisk(branch: string, risk_status: string) {
   const snapshot = await getCountFromServer(
     query(
       collection(db, "primary_people"),
-      where("branch", "==", branch),
       where("risk_status", "==", risk_status)
     )
   );
@@ -488,11 +477,7 @@ export async function countPeopleByRisk(branch: string, risk_status: string) {
 
 export async function countTasksByStatus(branch: string, status: string) {
   const snapshot = await getCountFromServer(
-    query(
-      collection(db, "tasks"),
-      where("branch", "==", branch),
-      where("status", "==", status)
-    )
+    query(collection(db, "tasks"), where("status", "==", status))
   );
   return snapshot.data().count;
 }
@@ -501,7 +486,6 @@ export async function countInteractionsSince(branch: string, sinceDate: string) 
   const snapshot = await getCountFromServer(
     query(
       collection(db, "interactions"),
-      where("branch", "==", branch),
       where("interaction_date", ">=", sinceDate)
     )
   );

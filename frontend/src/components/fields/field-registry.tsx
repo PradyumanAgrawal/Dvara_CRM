@@ -24,6 +24,7 @@ export type FieldConfig = {
   options?: FieldOption[];
   required?: boolean;
   description?: string;
+  disabled?: boolean;
 };
 
 type FieldRendererProps = {
@@ -45,9 +46,10 @@ export function FieldRenderer({ field, value, onChange }: FieldRendererProps) {
           value={value}
           onChange={(event) => onChange(event.target.value)}
           required={field.required}
+          disabled={field.disabled}
         />
       ) : field.type === "select" ? (
-        <Select value={value} onValueChange={onChange}>
+        <Select value={value} onValueChange={onChange} disabled={field.disabled}>
           <SelectTrigger id={id}>
             <SelectValue placeholder={field.placeholder ?? "Select"} />
           </SelectTrigger>
@@ -67,6 +69,7 @@ export function FieldRenderer({ field, value, onChange }: FieldRendererProps) {
           value={value}
           onChange={(event) => onChange(event.target.value)}
           required={field.required}
+          disabled={field.disabled}
         />
       )}
       {field.description ? (

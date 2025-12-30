@@ -11,11 +11,11 @@ export function AppShell() {
   const { user, profile } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground app-surface">
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-background/80 px-6 py-4 backdrop-blur">
+          <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-background/70 px-6 py-4 backdrop-blur">
             <Breadcrumbs />
             <div className="flex items-center gap-3 text-sm">
               <span className="text-muted-foreground">

@@ -24,35 +24,35 @@
         "data": {
           "role": "FieldOfficer",
           "branch": "Dvara-Main",
-          "display_name": "Kiran Das",
-          "email": "kiran@dvara.app"
+          "display_name": "Anita Rao",
+          "email": "anita.rao@example.com"
         }
       },
       {
-        "id": "{{OFFICER_2_UID}}",
+        "id": "OFFICER_TWO_UID",
         "data": {
           "role": "FieldOfficer",
           "branch": "Dvara-Main",
-          "display_name": "Nisha Rao",
-          "email": "nisha@dvara.app"
+          "display_name": "Imran Sheikh",
+          "email": "imran.sheikh@example.com"
         }
       },
       {
-        "id": "{{EAST_MANAGER_UID}}",
+        "id": "MANAGER_UID",
         "data": {
           "role": "BranchManager",
-          "branch": "Dvara-East",
-          "display_name": "Vikram Sen",
-          "email": "vikram@dvara.app"
+          "branch": "Dvara-Main",
+          "display_name": "Rajesh Iyer",
+          "email": "rajesh.iyer@example.com"
         }
       },
       {
-        "id": "{{EAST_OFFICER_UID}}",
+        "id": "ADMIN_UID",
         "data": {
-          "role": "FieldOfficer",
-          "branch": "Dvara-East",
-          "display_name": "Leela Gupta",
-          "email": "leela@dvara.app"
+          "role": "Admin",
+          "branch": "Dvara-Main",
+          "display_name": "Kavya Menon",
+          "email": "kavya.menon@example.com"
         }
       }
     ],
@@ -68,153 +68,68 @@
           "pgpd_stage": "Plan",
           "risk_flags": [],
           "risk_status": "Normal",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "created_by": "{{OFFICER_1_UID}}",
-          "notes": "New dairy cooperative member."
+          "assigned_officer_id": "OFFICER_UID",
+          "notes": "Runs a small dairy unit."
         }
       },
       {
         "id": "person_002",
         "data": {
-          "full_name": "Ramesh Kumar",
+          "full_name": "Rahim Khan",
           "mobile_number": "9000000001",
-          "village": "Gopalpur",
+          "village": "Rampur",
           "branch": "Dvara-Main",
           "role": "Borrower",
           "pgpd_stage": "Grow",
-          "risk_flags": [],
-          "risk_status": "Normal",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "created_by": "{{OFFICER_1_UID}}",
-          "notes": "MSME furniture unit expanding to two new markets."
+          "risk_flags": ["Income Volatility"],
+          "risk_status": "At Risk",
+          "assigned_officer_id": "OFFICER_TWO_UID",
+          "notes": "Seasonal income from transport services."
         }
       },
       {
         "id": "person_003",
         "data": {
-          "full_name": "Asha Patel",
+          "full_name": "Meera Nair",
           "mobile_number": "9000000002",
-          "village": "Nandgaon",
+          "village": "Kuttanad",
           "branch": "Dvara-Main",
           "role": "Primary Earner",
           "pgpd_stage": "Protect",
-          "risk_flags": ["Income Volatility"],
+          "risk_flags": ["Health Shock Risk"],
           "risk_status": "At Risk",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "created_by": "{{OFFICER_2_UID}}",
-          "notes": "Seasonal income swings due to crop cycle."
+          "assigned_officer_id": "OFFICER_UID",
+          "notes": "Exploring health cover upgrades."
         }
       },
       {
         "id": "person_004",
         "data": {
-          "full_name": "Meera Joshi",
+          "full_name": "Ramesh Patel",
           "mobile_number": "9000000003",
-          "village": "Suryapur",
+          "village": "Navapura",
           "branch": "Dvara-Main",
-          "role": "Borrower",
+          "role": "Primary Earner",
           "pgpd_stage": "Diversify",
           "risk_flags": [],
           "risk_status": "Normal",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "created_by": "{{OFFICER_2_UID}}",
-          "notes": "Graduated from loan, reducing dependency."
+          "assigned_officer_id": "OFFICER_TWO_UID",
+          "notes": "Runs a hardware supply store."
         }
       },
       {
-        "id": "person_005",
+        "id": "person_101",
         "data": {
-          "full_name": "Imran Sheikh",
-          "mobile_number": "9000000004",
-          "village": "Chandanpur",
-          "branch": "Dvara-Main",
-          "role": "Primary Earner",
-          "pgpd_stage": "Plan",
-          "risk_flags": ["Health Shock Risk", "Climate Risk"],
-          "risk_status": "At Risk",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "created_by": "{{OFFICER_1_UID}}",
-          "notes": "Cyclone exposure with irregular income."
-        }
-      },
-      {
-        "id": "person_006",
-        "data": {
-          "full_name": "Kavita Rao",
-          "mobile_number": "9000000005",
-          "village": "Ramgarh",
-          "branch": "Dvara-Main",
-          "role": "Primary Earner",
-          "pgpd_stage": "Grow",
-          "risk_flags": [],
-          "risk_status": "Normal",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "created_by": "{{OFFICER_2_UID}}",
-          "notes": "Interested in pension renewal."
-        }
-      },
-      {
-        "id": "person_007",
-        "data": {
-          "full_name": "Lakshmi Bai",
-          "mobile_number": "9000000006",
-          "village": "Rajapur",
-          "branch": "Dvara-Main",
-          "role": "Primary Earner",
-          "pgpd_stage": "Protect",
-          "risk_flags": [],
-          "risk_status": "Normal",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "created_by": "{{OFFICER_1_UID}}",
-          "notes": "Insurance rider under review."
-        }
-      },
-      {
-        "id": "person_008",
-        "data": {
-          "full_name": "Pooja Verma",
-          "mobile_number": "9000000007",
-          "village": "Kalyanpur",
-          "branch": "Dvara-Main",
+          "full_name": "Nisha Verma",
+          "mobile_number": "9000000099",
+          "village": "Dharampur",
+          "branch": "Dvara-North",
           "role": "Borrower",
-          "pgpd_stage": "Grow",
-          "risk_flags": [],
-          "risk_status": "Normal",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "created_by": "{{OFFICER_2_UID}}",
-          "notes": "On track with repayment schedule."
-        }
-      },
-      {
-        "id": "person_e01",
-        "data": {
-          "full_name": "Arun Singh",
-          "mobile_number": "9000000010",
-          "village": "Bhavani",
-          "branch": "Dvara-East",
-          "role": "Primary Earner",
           "pgpd_stage": "Plan",
           "risk_flags": [],
           "risk_status": "Normal",
-          "assigned_officer_id": "{{EAST_OFFICER_UID}}",
-          "created_by": "{{EAST_OFFICER_UID}}",
-          "notes": "New dairy enterprise set-up."
-        }
-      },
-      {
-        "id": "person_e02",
-        "data": {
-          "full_name": "Rani Devi",
-          "mobile_number": "9000000011",
-          "village": "Bharatpur",
-          "branch": "Dvara-East",
-          "role": "Borrower",
-          "pgpd_stage": "Grow",
-          "risk_flags": ["Income Volatility"],
-          "risk_status": "At Risk",
-          "assigned_officer_id": "{{EAST_OFFICER_UID}}",
-          "created_by": "{{EAST_OFFICER_UID}}",
-          "notes": "Seasonal wage labor with irregular cash flow."
+          "assigned_officer_id": "OFFICER_UID",
+          "notes": "Other-branch sample record."
         }
       }
     ],
@@ -227,106 +142,40 @@
           "primary_earning_source": "Agriculture",
           "seasonality_profile": "Kharif",
           "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_1_UID}}"
+          "assigned_officer_id": "OFFICER_UID"
         }
       },
       {
         "id": "household_002",
         "data": {
-          "household_name": "Ramesh Kumar Household",
+          "household_name": "Rahim Khan Household",
           "primary_person_id": "person_002",
           "primary_earning_source": "MSME",
           "seasonality_profile": "Perennial",
           "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_1_UID}}"
+          "assigned_officer_id": "OFFICER_TWO_UID"
         }
       },
       {
         "id": "household_003",
         "data": {
-          "household_name": "Asha Patel Household",
+          "household_name": "Meera Nair Household",
           "primary_person_id": "person_003",
-          "primary_earning_source": "Agriculture",
+          "primary_earning_source": "Wage",
           "seasonality_profile": "Rabi",
           "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_2_UID}}"
+          "assigned_officer_id": "OFFICER_UID"
         }
       },
       {
         "id": "household_004",
         "data": {
-          "household_name": "Meera Joshi Household",
+          "household_name": "Ramesh Patel Household",
           "primary_person_id": "person_004",
-          "primary_earning_source": "Wage",
+          "primary_earning_source": "Agriculture",
           "seasonality_profile": "Perennial",
           "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_2_UID}}"
-        }
-      },
-      {
-        "id": "household_005",
-        "data": {
-          "household_name": "Imran Sheikh Household",
-          "primary_person_id": "person_005",
-          "primary_earning_source": "Agriculture",
-          "seasonality_profile": "Kharif",
-          "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_1_UID}}"
-        }
-      },
-      {
-        "id": "household_006",
-        "data": {
-          "household_name": "Kavita Rao Household",
-          "primary_person_id": "person_006",
-          "primary_earning_source": "Wage",
-          "seasonality_profile": "Perennial",
-          "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_2_UID}}"
-        }
-      },
-      {
-        "id": "household_007",
-        "data": {
-          "household_name": "Lakshmi Bai Household",
-          "primary_person_id": "person_007",
-          "primary_earning_source": "Agriculture",
-          "seasonality_profile": "Rabi",
-          "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_1_UID}}"
-        }
-      },
-      {
-        "id": "household_008",
-        "data": {
-          "household_name": "Pooja Verma Household",
-          "primary_person_id": "person_008",
-          "primary_earning_source": "MSME",
-          "seasonality_profile": "Perennial",
-          "branch": "Dvara-Main",
-          "created_by": "{{OFFICER_2_UID}}"
-        }
-      },
-      {
-        "id": "household_e01",
-        "data": {
-          "household_name": "Arun Singh Household",
-          "primary_person_id": "person_e01",
-          "primary_earning_source": "Agriculture",
-          "seasonality_profile": "Kharif",
-          "branch": "Dvara-East",
-          "created_by": "{{EAST_OFFICER_UID}}"
-        }
-      },
-      {
-        "id": "household_e02",
-        "data": {
-          "household_name": "Rani Devi Household",
-          "primary_person_id": "person_e02",
-          "primary_earning_source": "Wage",
-          "seasonality_profile": "Rabi",
-          "branch": "Dvara-East",
-          "created_by": "{{EAST_OFFICER_UID}}"
+          "assigned_officer_id": "OFFICER_TWO_UID"
         }
       }
     ],
@@ -334,131 +183,66 @@
       {
         "id": "product_001",
         "data": {
-          "product_name": "Kisan Loan",
+          "product_name": "Working Capital Loan",
           "product_type": "Loan",
           "status": "Active",
-          "amount": 85000,
-          "primary_person_id": "person_002",
-          "primary_person_name": "Ramesh Kumar",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
+          "amount": 120000,
+          "primary_person_id": "person_001",
+          "primary_person_name": "Sita Devi",
+          "assigned_officer_id": "OFFICER_UID",
           "branch": "Dvara-Main"
         }
       },
       {
         "id": "product_002",
         "data": {
-          "product_name": "Life Shield",
+          "product_name": "Livestock Insurance",
           "product_type": "Insurance",
-          "status": "Active",
-          "amount": 250000,
-          "primary_person_id": "person_003",
-          "primary_person_name": "Asha Patel",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
+          "status": "Renewal Due",
+          "amount": 25000,
+          "primary_person_id": "person_002",
+          "primary_person_name": "Rahim Khan",
+          "assigned_officer_id": "OFFICER_TWO_UID",
           "branch": "Dvara-Main"
         }
       },
       {
         "id": "product_003",
         "data": {
-          "product_name": "MSME Loan",
-          "product_type": "Loan",
+          "product_name": "Savings Account",
+          "product_type": "Savings",
           "status": "Closed",
-          "amount": 60000,
-          "primary_person_id": "person_004",
-          "primary_person_name": "Meera Joshi",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
+          "amount": 50000,
+          "primary_person_id": "person_003",
+          "primary_person_name": "Meera Nair",
+          "assigned_officer_id": "OFFICER_UID",
           "branch": "Dvara-Main"
         }
       },
       {
         "id": "product_004",
         "data": {
-          "product_name": "Women Saver",
-          "product_type": "Savings",
-          "status": "Active",
-          "amount": 15000,
-          "primary_person_id": "person_001",
-          "primary_person_name": "Sita Devi",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
+          "product_name": "Microenterprise Loan",
+          "product_type": "Loan",
+          "status": "Renewal Due",
+          "amount": 200000,
+          "primary_person_id": "person_002",
+          "primary_person_name": "Rahim Khan",
+          "assigned_officer_id": "OFFICER_TWO_UID",
           "branch": "Dvara-Main"
         }
       },
       {
         "id": "product_005",
         "data": {
-          "product_name": "Pension Plus",
+          "product_name": "Pension Plan",
           "product_type": "Pension",
-          "status": "Renewal Due",
-          "amount": 1200,
-          "primary_person_id": "person_006",
-          "primary_person_name": "Kavita Rao",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
+          "status": "Active",
+          "amount": 30000,
+          "primary_person_id": "person_004",
+          "primary_person_name": "Ramesh Patel",
+          "assigned_officer_id": "OFFICER_TWO_UID",
           "branch": "Dvara-Main"
-        }
-      },
-      {
-        "id": "product_006",
-        "data": {
-          "product_name": "Climate Safety Loan",
-          "product_type": "Loan",
-          "status": "Active",
-          "amount": 45000,
-          "primary_person_id": "person_005",
-          "primary_person_name": "Imran Sheikh",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "branch": "Dvara-Main"
-        }
-      },
-      {
-        "id": "product_007",
-        "data": {
-          "product_name": "Health Cover",
-          "product_type": "Insurance",
-          "status": "Active",
-          "amount": 90000,
-          "primary_person_id": "person_007",
-          "primary_person_name": "Lakshmi Bai",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "branch": "Dvara-Main"
-        }
-      },
-      {
-        "id": "product_008",
-        "data": {
-          "product_name": "Growth Saver",
-          "product_type": "Savings",
-          "status": "Active",
-          "amount": 18000,
-          "primary_person_id": "person_008",
-          "primary_person_name": "Pooja Verma",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "branch": "Dvara-Main"
-        }
-      },
-      {
-        "id": "product_e01",
-        "data": {
-          "product_name": "Dairy Expansion Loan",
-          "product_type": "Loan",
-          "status": "Active",
-          "amount": 70000,
-          "primary_person_id": "person_e01",
-          "primary_person_name": "Arun Singh",
-          "assigned_officer_id": "{{EAST_OFFICER_UID}}",
-          "branch": "Dvara-East"
-        }
-      },
-      {
-        "id": "product_e02",
-        "data": {
-          "product_name": "Family Shield",
-          "product_type": "Insurance",
-          "status": "Active",
-          "amount": 140000,
-          "primary_person_id": "person_e02",
-          "primary_person_name": "Rani Devi",
-          "assigned_officer_id": "{{EAST_OFFICER_UID}}",
-          "branch": "Dvara-East"
         }
       }
     ],
@@ -466,151 +250,76 @@
       {
         "id": "interaction_001",
         "data": {
-          "interaction_title": "Onboarding field visit",
+          "interaction_title": "Baseline household visit",
           "interaction_type": "Field Visit",
-          "interaction_date": "{{TODAY_MINUS_6}}",
+          "interaction_date": "{{TODAY-10}}",
           "outcome": "Completed",
           "primary_person_id": "person_001",
           "primary_person_name": "Sita Devi",
-          "linked_product_id": "product_004",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
+          "linked_product_id": "product_001",
+          "field_officer_notes": "Discussed income patterns and savings goals.",
           "branch": "Dvara-Main",
-          "field_officer_notes": "Explained savings plan and PGPD stages."
+          "assigned_officer_id": "OFFICER_UID"
         }
       },
       {
         "id": "interaction_002",
         "data": {
-          "interaction_title": "Loan repayment follow-up",
+          "interaction_title": "EMI follow-up call",
           "interaction_type": "EMI Follow-up",
-          "interaction_date": "{{TODAY_MINUS_5}}",
+          "interaction_date": "{{TODAY-2}}",
           "outcome": "Follow-up Required",
-          "next_action_date": "{{TODAY_PLUS_2}}",
-          "primary_person_id": "person_002",
-          "primary_person_name": "Ramesh Kumar",
+          "next_action_date": "{{TODAY+3}}",
+          "primary_person_id": "person_001",
+          "primary_person_name": "Sita Devi",
           "linked_product_id": "product_001",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
+          "field_officer_notes": "Customer asked for a reschedule.",
           "branch": "Dvara-Main",
-          "field_officer_notes": "Customer requested a reminder call."
+          "assigned_officer_id": "OFFICER_UID"
         }
       },
       {
         "id": "interaction_003",
         "data": {
-          "interaction_title": "Insurance review",
-          "interaction_type": "Insurance Discussion",
-          "interaction_date": "{{TODAY_MINUS_3}}",
-          "outcome": "Completed",
-          "primary_person_id": "person_003",
-          "primary_person_name": "Asha Patel",
+          "interaction_title": "Insurance claim support",
+          "interaction_type": "Claim Support",
+          "interaction_date": "{{TODAY-1}}",
+          "outcome": "Escalated",
+          "primary_person_id": "person_002",
+          "primary_person_name": "Rahim Khan",
           "linked_product_id": "product_002",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
+          "field_officer_notes": "Documents pending from hospital.",
           "branch": "Dvara-Main",
-          "field_officer_notes": "Discussed coverage gaps."
+          "assigned_officer_id": "OFFICER_TWO_UID"
         }
       },
       {
         "id": "interaction_004",
         "data": {
-          "interaction_title": "Claim support call",
-          "interaction_type": "Claim Support",
-          "interaction_date": "{{TODAY_MINUS_2}}",
-          "outcome": "Customer Unavailable",
-          "next_action_date": "{{TODAY_PLUS_3}}",
-          "primary_person_id": "person_005",
-          "primary_person_name": "Imran Sheikh",
-          "linked_product_id": "product_006",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
+          "interaction_title": "Quarterly financial review",
+          "interaction_type": "Financial Review",
+          "interaction_date": "{{TODAY-6}}",
+          "outcome": "Completed",
+          "primary_person_id": "person_003",
+          "primary_person_name": "Meera Nair",
+          "linked_product_id": "product_003",
+          "field_officer_notes": "Emergency fund plan agreed.",
           "branch": "Dvara-Main",
-          "field_officer_notes": "Need to reconnect after clinic visit."
+          "assigned_officer_id": "OFFICER_UID"
         }
       },
       {
         "id": "interaction_005",
         "data": {
-          "interaction_title": "Savings diversification review",
-          "interaction_type": "Financial Review",
-          "interaction_date": "{{TODAY_MINUS_1}}",
-          "outcome": "Escalated",
+          "interaction_title": "Insurance discussion",
+          "interaction_type": "Insurance Discussion",
+          "interaction_date": "{{TODAY-8}}",
+          "outcome": "Customer Unavailable",
           "primary_person_id": "person_004",
-          "primary_person_name": "Meera Joshi",
-          "linked_product_id": "product_003",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
+          "primary_person_name": "Ramesh Patel",
+          "field_officer_notes": "Needs a new meeting slot.",
           "branch": "Dvara-Main",
-          "field_officer_notes": "Needs approval for pension add-on."
-        }
-      },
-      {
-        "id": "interaction_006",
-        "data": {
-          "interaction_title": "Pension renewal briefing",
-          "interaction_type": "Field Visit",
-          "interaction_date": "{{TODAY_MINUS_4}}",
-          "outcome": "Completed",
-          "primary_person_id": "person_006",
-          "primary_person_name": "Kavita Rao",
-          "linked_product_id": "product_005",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "branch": "Dvara-Main",
-          "field_officer_notes": "Renewal due next month."
-        }
-      },
-      {
-        "id": "interaction_007",
-        "data": {
-          "interaction_title": "Risk flag verification",
-          "interaction_type": "Financial Review",
-          "interaction_date": "{{TODAY_MINUS_7}}",
-          "outcome": "Follow-up Required",
-          "next_action_date": "{{TODAY_PLUS_4}}",
-          "primary_person_id": "person_005",
-          "primary_person_name": "Imran Sheikh",
-          "assigned_officer_id": "{{OFFICER_1_UID}}",
-          "branch": "Dvara-Main",
-          "field_officer_notes": "Collect household medical receipts."
-        }
-      },
-      {
-        "id": "interaction_008",
-        "data": {
-          "interaction_title": "Savings commitment check-in",
-          "interaction_type": "Financial Review",
-          "interaction_date": "{{TODAY_MINUS_2}}",
-          "outcome": "Completed",
-          "primary_person_id": "person_008",
-          "primary_person_name": "Pooja Verma",
-          "assigned_officer_id": "{{OFFICER_2_UID}}",
-          "branch": "Dvara-Main",
-          "field_officer_notes": "On track with weekly deposits."
-        }
-      },
-      {
-        "id": "interaction_e01",
-        "data": {
-          "interaction_title": "East branch onboarding",
-          "interaction_type": "Field Visit",
-          "interaction_date": "{{TODAY_MINUS_3}}",
-          "outcome": "Completed",
-          "primary_person_id": "person_e01",
-          "primary_person_name": "Arun Singh",
-          "assigned_officer_id": "{{EAST_OFFICER_UID}}",
-          "branch": "Dvara-East",
-          "field_officer_notes": "Reviewed dairy income plans."
-        }
-      },
-      {
-        "id": "interaction_e02",
-        "data": {
-          "interaction_title": "Income volatility follow-up",
-          "interaction_type": "EMI Follow-up",
-          "interaction_date": "{{TODAY_MINUS_1}}",
-          "outcome": "Follow-up Required",
-          "next_action_date": "{{TODAY_PLUS_2}}",
-          "primary_person_id": "person_e02",
-          "primary_person_name": "Rani Devi",
-          "assigned_officer_id": "{{EAST_OFFICER_UID}}",
-          "branch": "Dvara-East",
-          "field_officer_notes": "Confirm seasonal wage schedule."
+          "assigned_officer_id": "OFFICER_TWO_UID"
         }
       }
     ],
@@ -619,7 +328,7 @@
         "id": "task_001",
         "data": {
           "task_title": "Initial financial assessment visit",
-          "due_date": "{{TODAY_PLUS_2}}",
+          "due_date": "{{TODAY+2}}",
           "status": "Open",
           "task_type": "System",
           "assigned_officer_id": "{{OFFICER_1_UID}}",
@@ -1068,6 +777,246 @@
           "created_by": "{{EAST_OFFICER_UID}}",
           "details": { "stage": "Plan" },
           "created_at": "{{TODAY_MINUS_3}}"
+        }
+      },
+      {
+        "id": "task_002",
+        "data": {
+          "task_title": "Follow-up: EMI follow-up call",
+          "due_date": "{{TODAY+3}}",
+          "status": "Open",
+          "task_type": "FollowUp",
+          "linked_interaction_id": "interaction_002",
+          "assigned_officer_id": "OFFICER_UID",
+          "primary_person_id": "person_001",
+          "primary_person_name": "Sita Devi",
+          "source_ref": "interactions/interaction_002",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_UID"
+        }
+      },
+      {
+        "id": "task_003",
+        "data": {
+          "task_title": "Business / income review",
+          "due_date": "{{TODAY+7}}",
+          "status": "Suggested",
+          "task_type": "SuggestedInteraction",
+          "assigned_officer_id": "OFFICER_UID",
+          "primary_person_id": "person_001",
+          "primary_person_name": "Sita Devi",
+          "source_ref": "products/product_001",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_UID"
+        }
+      },
+      {
+        "id": "task_004",
+        "data": {
+          "task_title": "Risk mitigation plan",
+          "due_date": "{{TODAY+5}}",
+          "status": "Open",
+          "task_type": "FollowUp",
+          "assigned_officer_id": "OFFICER_TWO_UID",
+          "primary_person_id": "person_002",
+          "primary_person_name": "Rahim Khan",
+          "source_ref": "primary_people/person_002",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_TWO_UID"
+        }
+      },
+      {
+        "id": "task_005",
+        "data": {
+          "task_title": "Savings closure confirmation",
+          "due_date": "{{TODAY-3}}",
+          "status": "Done",
+          "task_type": "System",
+          "assigned_officer_id": "OFFICER_UID",
+          "primary_person_id": "person_003",
+          "primary_person_name": "Meera Nair",
+          "source_ref": "products/product_003",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_UID"
+        }
+      },
+      {
+        "id": "task_006",
+        "data": {
+          "task_title": "Pension onboarding checklist",
+          "due_date": "{{TODAY+10}}",
+          "status": "Open",
+          "task_type": "System",
+          "assigned_officer_id": "OFFICER_TWO_UID",
+          "primary_person_id": "person_004",
+          "primary_person_name": "Ramesh Patel",
+          "source_ref": "products/product_005",
+          "branch": "Dvara-Main",
+          "created_by": "OFFICER_TWO_UID"
+        }
+      }
+    ],
+    "opportunities": [
+      {
+        "id": "opportunity_001",
+        "data": {
+          "opportunity_name": "Microenterprise Working Capital",
+          "stage": "Identified",
+          "value": 250000,
+          "owner_user_id": "OFFICER_UID",
+          "primary_person_id": "person_001",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "opportunity_002",
+        "data": {
+          "opportunity_name": "Farm Equipment Upgrade",
+          "stage": "Proposal",
+          "value": 500000,
+          "owner_user_id": "MANAGER_UID",
+          "primary_person_id": "person_002",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "opportunity_003",
+        "data": {
+          "opportunity_name": "Water Pump Financing",
+          "stage": "Won",
+          "value": 150000,
+          "owner_user_id": "OFFICER_TWO_UID",
+          "primary_person_id": "person_004",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "opportunity_004",
+        "data": {
+          "opportunity_name": "Education Loan Renewal",
+          "stage": "Lost",
+          "value": 80000,
+          "owner_user_id": "OFFICER_UID",
+          "primary_person_id": "person_003",
+          "branch": "Dvara-Main"
+        }
+      }
+    ],
+    "meetings": [
+      {
+        "id": "meeting_001",
+        "data": {
+          "meeting_title": "Branch weekly review",
+          "scheduled_at": "{{TODAY+1}}",
+          "location": "Dvara-Main",
+          "attendee_ids": ["OFFICER_UID", "OFFICER_TWO_UID", "MANAGER_UID"],
+          "notes": "Review at-risk cases and open tasks.",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "meeting_002",
+        "data": {
+          "meeting_title": "Village outreach planning",
+          "scheduled_at": "{{TODAY+5}}",
+          "location": "Lakshmipur",
+          "attendee_ids": ["OFFICER_UID"],
+          "notes": "Plan follow-up visits with dairy cluster.",
+          "branch": "Dvara-Main"
+        }
+      }
+    ],
+    "phone_calls": [
+      {
+        "id": "call_001",
+        "data": {
+          "call_time": "{{TODAY-4}}",
+          "duration": 12,
+          "outcome": "Connected",
+          "primary_person_id": "person_001",
+          "notes": "Confirmed visit timing.",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "call_002",
+        "data": {
+          "call_time": "{{TODAY-2}}",
+          "duration": 5,
+          "outcome": "No answer",
+          "primary_person_id": "person_002",
+          "notes": "Will retry in the evening.",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "call_003",
+        "data": {
+          "call_time": "{{TODAY-1}}",
+          "duration": 8,
+          "outcome": "Follow-up required",
+          "primary_person_id": "person_003",
+          "notes": "Needs document submission.",
+          "branch": "Dvara-Main"
+        }
+      }
+    ],
+    "rfps": [
+      {
+        "id": "rfp_001",
+        "data": {
+          "rfp_title": "Livelihoods Program RFP",
+          "status": "Submitted",
+          "due_date": "{{TODAY+14}}",
+          "primary_person_id": "person_002",
+          "attachment_name": "livelihoods_rfp.pdf",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "rfp_002",
+        "data": {
+          "rfp_title": "Water Access Proposal",
+          "status": "Draft",
+          "due_date": "{{TODAY+21}}",
+          "primary_person_id": "person_004",
+          "attachment_name": "water_access_draft.docx",
+          "branch": "Dvara-Main"
+        }
+      }
+    ],
+    "invoices": [
+      {
+        "id": "invoice_001",
+        "data": {
+          "invoice_title": "January Field Ops",
+          "status": "Sent",
+          "amount": 42000,
+          "primary_person_id": "person_001",
+          "attachment_name": "invoice_jan.pdf",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "invoice_002",
+        "data": {
+          "invoice_title": "Insurance Service Fee",
+          "status": "Paid",
+          "amount": 18000,
+          "primary_person_id": "person_002",
+          "attachment_name": "insurance_fee.pdf",
+          "branch": "Dvara-Main"
+        }
+      },
+      {
+        "id": "invoice_003",
+        "data": {
+          "invoice_title": "Training Workshop",
+          "status": "Overdue",
+          "amount": 25000,
+          "primary_person_id": "person_004",
+          "attachment_name": "training_invoice.pdf",
+          "branch": "Dvara-Main"
         }
       }
     ]

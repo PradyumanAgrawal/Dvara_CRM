@@ -46,7 +46,9 @@ const fields: FieldConfig[] = [
     label: "Branch",
     type: "text",
     placeholder: "Assigned branch",
-    required: true
+    required: true,
+    disabled: true,
+    description: "Set from your profile."
   },
   {
     name: "primary_earning_source",
@@ -105,7 +107,7 @@ export function PeopleCreate() {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (profile?.branch && !values.branch) {
+    if (profile?.branch && values.branch !== profile.branch) {
       setValues((prev) => ({ ...prev, branch: profile.branch ?? "" }));
     }
   }, [profile?.branch, values.branch]);
@@ -129,7 +131,7 @@ export function PeopleCreate() {
     setError(null);
     setSubmitting(true);
     try {
-      const branch = values.branch || profile.branch;
+      const branch = profile.branch;
       await createPersonWithHousehold(
         {
           full_name: values.full_name,

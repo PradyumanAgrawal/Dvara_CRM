@@ -32,7 +32,7 @@ const filters: TableFilter[] = [
 ];
 
 export function TasksList() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [rows, setRows] = React.useState<TaskRow[]>([]);
   const [filtersState, setFiltersState] = React.useState<Record<string, string>>({
     status: "all"
@@ -42,16 +42,16 @@ export function TasksList() {
   const [search, setSearch] = React.useState("");
 
   React.useEffect(() => {
-    if (!user) {
+    if (!user || !profile?.branch) {
       setLoading(false);
-      setError("Missing user session.");
+      setError("Missing user or branch.");
       return;
     }
 
     let isMounted = true;
     setLoading(true);
     setError(null);
-    listTasksByOfficer(user.uid)
+    listTasksByOfficer(user.uid, profile.branch)
       .then((data) => {
         if (!isMounted) return;
         const mapped = data.map((doc) => ({
@@ -79,7 +79,7 @@ export function TasksList() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, profile?.branch]);
 
   const handleStatusChange = async (id: string, status: TaskRow["status"]) => {
     try {
